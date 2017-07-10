@@ -71,8 +71,8 @@ role.B.prob <- role.W.prob <- (c(0.242, 0.321, 0.437) +
 
 
 # Create meanstats
-st <- calc_nwstats.msm(
-  method = 1,
+st <- calc_nwstats_msm(
+  method = 2,
   time.unit = time.unit,
   num.B = num.B,
   num.W = num.W,
@@ -98,5 +98,5 @@ st <- calc_nwstats.msm(
   role.B.prob = role.B.prob,
   role.W.prob = role.W.prob)
 
-save(st, file = "est/nwstats.rda")
+save(st, file = "est/nwstats.prace.rda")
 rm(list = ls())

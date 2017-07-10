@@ -4,21 +4,22 @@
 suppressMessages(library("EpiModelHIV"))
 rm(list = ls())
 
-load("est/nwstats.rda")
+load("est/nwstats.prace.rda")
 
 
 # 1. Main Model -----------------------------------------------------------
 
 # Initialize network
-nw.main <- base_nw.msm(st)
+nw.main <- base_nw_msm(st)
 
 # Assign degree
 nw.main <- assign_degree(nw.main, deg.type = "pers", nwstats = st)
 
 # Formulas
 formation.m <- ~edges +
-                nodefactor("deg.pers") +
-                absdiff("sqrt.age") +
+                nodemix("race", base = 1) +
+                nodefactor("deg.pers", base = c(1, 4)) +
+                absdiffnodemix("sqrt.age", "race") +
                 offset(nodematch("role.class", diff = TRUE, keep = 1:2))
 
 # Fit model
@@ -43,9 +44,10 @@ nw.pers <- assign_degree(nw.pers, deg.type = "main", nwstats = st)
 
 # Formulas
 formation.p <- ~edges +
-                nodefactor("deg.main") +
-                concurrent +
-                absdiff("sqrt.age") +
+                nodemix("race", base = 1) +
+                nodefactor("deg.main", base = c(1, 3)) +
+                concurrent(by = "race") +
+                absdiffnodemix("sqrt.age", "race") +
                 offset(nodematch("role.class", diff = TRUE, keep = 1:2))
 
 # Fit model
@@ -73,8 +75,9 @@ table(nw.inst %v% "deg.main", nw.inst %v% "deg.pers")
 # Formulas
 formation.i <- ~edges +
                 nodefactor(c("deg.main", "deg.pers")) +
-                nodefactor("riskg", base = 3) +
-                absdiff("sqrt.age") +
+                nodefactor(c("race", "riskg"), base = c(3, 8)) +
+                nodematch("race") +
+                absdiffnodemix("sqrt.age", "race") +
                 offset(nodematch("role.class", diff = TRUE, keep = 1:2))
 
 # Fit model
