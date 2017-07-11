@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# runs abc fit
-qsub -q batch runsim.burn.abcsmc2.sh
-
-
 # runs burnin model
-qsub -q batch -t 1-9 -v SIMNO=100,NJOBS=9 runsim.burn.sh
-
-
+qsub -q batch -t 1-2 -v SIMNO=1000,NJOBS=2 runsim.burn.sh
+qsub -q batch -t 3-10 -v SIMNO=1000,NJOBS=2 runsim.burn.sh

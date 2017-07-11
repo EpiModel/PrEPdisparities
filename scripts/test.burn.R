@@ -8,16 +8,12 @@ devtools::load_all("~/Dropbox/Dev/EpiModelHIV/EpiModelHIV")
 load("est/nwstats.prace.rda")
 
 param <- param_msm(nwstats = st,
-                   prep.start = 5000,
-                   prep.coverage = 0,
-                   riskh.start = 1,
-                   prep.timing.lnt = TRUE,
-                   prep.indics = 5,
-                   prep.sens.start = 30)
-init <- init_msm(nwstats = st)
-
+                   race.method = 2)
+init <- init_msm(nwstats = st,
+                 prev.B = 0.46,
+                 prev.W = 0.15)
 control <- control_msm(simno = 1,
-                       nsteps = 52 * 10,
+                       nsteps = 52 * 60,
                        nsims = 1,
                        ncores = 1)
 
@@ -44,7 +40,6 @@ for (at in 2:520) {
   dat <- disclose_msm(dat, at)
   dat <- acts_msm(dat, at)
   dat <- condoms_msm(dat, at)
-  dat <- riskhist_msm(dat, at)
   dat <- position_msm(dat, at)
   dat <- trans_msm(dat, at)
   dat <- sti_trans(dat, at)
