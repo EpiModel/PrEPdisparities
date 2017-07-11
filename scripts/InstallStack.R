@@ -20,3 +20,6 @@ devtools::install_github("statnet/EpiModelHIV", ref = "prep-race")
 
 system("scp est/*.rda hyak:/gscratch/csde/sjenness/race/est")
 system("scp scripts/burnin/*.burn.* hyak:/gscratch/csde/sjenness/race/")
+
+system("scp hyak:/gscratch/csde/sjenness/race/data/*.rda data/")
+
