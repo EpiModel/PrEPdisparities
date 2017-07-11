@@ -1,8 +1,8 @@
 
 library(methods)
-suppressMessages(library(EpiModel))
-library(doParallel)
-library(foreach)
+suppressMessages(library(EpiModelHIV))
+suppressMessages(library(doParallel))
+suppressMessages(library(foreach))
 
 ## Environmental Arguments
 simno <- as.numeric(Sys.getenv("PBS_ARRAYID"))
@@ -35,11 +35,10 @@ f <- function(est) {
 
 # Run parallel on each node
 registerDoParallel(16)
-nsims <- 500
+nsims <- 1000
 sout <- foreach(s = 1:nsims) %dopar% {
   f(est)
 }
 
 sim <- as.data.frame(do.call("rbind", sout))
 save(sim, file = paste0("data/sim.", simno, ".rda"))
-
