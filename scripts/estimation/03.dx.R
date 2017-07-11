@@ -29,7 +29,7 @@ plot(dx.c, qnts.alpha = 0.9)
 # One-off model diagnostics
 
 fit.i <- est[[3]]
-dx.i <- netdx(fit.i, nsims = 1000, dynamic = FALSE)
+dx.i <- netdx(fit.i, nsims = 25000, dynamic = FALSE)
 
 print(dx.i)
 plot(dx.i)
