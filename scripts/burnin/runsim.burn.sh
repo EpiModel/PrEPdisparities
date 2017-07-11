@@ -1,12 +1,12 @@
 #!/bin/bash
 
 ### User specs
-#PBS -N recalib
+#PBS -N prace
 #PBS -l nodes=1:ppn=16,mem=50gb,feature=16core,walltime=01:00:00
-#PBS -o /gscratch/csde/sjenness/stia/out
-#PBS -e /gscratch/csde/sjenness/stia/out
+#PBS -o /gscratch/csde/sjenness/race/out
+#PBS -e /gscratch/csde/sjenness/race/out
 #PBS -j oe
-#PBS -d /gscratch/csde/sjenness/stia
+#PBS -d /gscratch/csde/sjenness/race
 #PBS -m n
 
 ### Standard specs
@@ -20,7 +20,7 @@ ulimit -v $MEMPERTASK
 export MX_RCACHE=0
 
 ### Modules
-module load r_3.2.4
+module load r_3.2.5
 
 
 ### App
