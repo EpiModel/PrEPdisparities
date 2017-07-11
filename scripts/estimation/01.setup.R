@@ -1,5 +1,5 @@
 
-## Paper 1 scenario setup file
+## PrEP Race Setup
 
 rm(list = ls())
 suppressMessages(library("EpiModelHIV"))

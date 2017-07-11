@@ -1,5 +1,5 @@
 
-## Paper 1 estimation file
+## PrEP Race Estimation
 
 suppressMessages(library("EpiModelHIV"))
 rm(list = ls())
@@ -91,9 +91,4 @@ fit.i <- netest(nw.inst,
 
 # Save data
 est <- list(fit.m, fit.p, fit.i)
-save(est, file = "est/fit.rda")
-
-
-# Diagnostics -------------------------------------------------------------
-
-
+save(est, file = "est/fit.prace.rda")
