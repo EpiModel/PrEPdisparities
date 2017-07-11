@@ -1,6 +1,10 @@
 
+# devtools::install_github("statnet/tergm")
+library(EpiModelHIV)
+sessionInfo()
+
 # post-processing of data
-fn <- list.files("est/", pattern = "sim", full.names = TRUE)
+fn <- list.files("data/", pattern = "sim", full.names = TRUE)
 
 load(fn[1])
 fsim <- sim
@@ -10,43 +14,58 @@ for (i in 2:length(fn)) {
 }
 dim(fsim)
 
+load("est/fit.prace.rda")
+est <- est[[2]]
+target.stats <- est$target.stats
+
 # rejection algorithm, weighted threshold
 rejection <- function(sim,
-                      target.stat = c(2022.5, 890, 950, 1185),
+                      target.stat = target.stats,
                       threshold = 0.05) {
 
-  diff1 <- abs(sim$out1 - target.stat[1])
-  diff2 <- abs(sim$out2 - target.stat[2])
-  diff3 <- abs(sim$out3 - target.stat[3])
-  diff4 <- abs(sim$out4 - target.stat[4])
+  p <- sim[, 1:10]
+  dat <- sim[, 11:20]
 
-  diff <- (3.5*diff1) + diff2 + (2*diff3) + diff4
-  cutoff <- quantile(diff, threshold)
+  diffs <- list()
+  for (jj in 1:length(target.stats)) {
+    diffs[[jj]] <- abs(dat[, jj] - target.stat[jj])
+  }
+  diffs <- as.data.frame(diffs)
+  names(diffs) <- paste0("v", 1:length(target.stats))
 
-  in.threshold <- which(diff <= cutoff)
+  rdiff <- rowSums(diffs)
+  cutoff <- quantile(rdiff, threshold)
+
+  in.threshold <- which(rdiff <= cutoff)
 
   post <- sim[in.threshold, ]
-  return(post)
+  out <- list()
+  out$param <- post[, 1:10]
+  out$stats <- post[, 11:20]
+  return(out)
 }
 
-post <- rejection(fsim, threshold = 0.001)
-post
+post <- rejection(fsim, threshold = 0.01)
+str(post)
 
 # Accepted adjusted coefficients
-colMeans(post)[5:8]
-selection <- colMeans(post)[1:4]
-selection # <- c(-13.2053497653944, -0.346004865323799, 1.04989624409589, -0.456503943369997)
+selected.param <- colMeans(post$param)
+selected.stats <- colMeans(post$stats)
+
+cbind(target.stats, selected.stats)
+
+
 
 # Test it
-est2 <- est[[2]]
-est2$coef.form[1:4] <- selection
+est$coef.form[1:length(target.stats)] <- selected.param
 
-dx <- netdx(est2, nsteps = 300, nsims = 20, ncores = 4, dynamic = TRUE,
+dx <- netdx(est, nsteps = 500, nsims = 10, ncores = 1, dynamic = TRUE,
             set.control.ergm = control.simulate.ergm(MCMC.burnin = 2e6))
-dx
-plot(dx)
+
+print(dx)
+plot(dx, qnts.alpha = 0.9)
 
 # Write out to coefficients
-load("est/fit.rda")
-est[[2]]$coef.form[1:4] <- selection
-save(est, file = "est/fit.rda")
+load("est/fit.prace.rda")
+est[[2]]$coef.form[1:length(target.stats)] <- selected.param
+save(est, file = "est/fit.prace.rda")
