@@ -45,7 +45,7 @@ rejection <- function(sim,
   return(out)
 }
 
-post <- rejection(fsim, threshold = 0.01)
+post <- rejection(fsim, threshold = 0.005)
 str(post)
 
 # Accepted adjusted coefficients
@@ -59,7 +59,7 @@ cbind(target.stats, selected.stats)
 # Test it
 est$coef.form[1:length(target.stats)] <- selected.param
 
-dx <- netdx(est, nsteps = 500, nsims = 10, ncores = 1, dynamic = TRUE,
+dx <- netdx(est, nsteps = 500, nsims = 20, ncores = 1, dynamic = TRUE,
             set.control.ergm = control.simulate.ergm(MCMC.burnin = 2e6))
 
 print(dx)

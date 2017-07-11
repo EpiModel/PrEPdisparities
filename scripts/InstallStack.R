@@ -10,3 +10,5 @@ system("scp est/*.rda hyak:/gscratch/csde/sjenness/race/est")
 system("scp scripts/estimation/*.reestim.* hyak:/gscratch/csde/sjenness/race/")
 
 system("scp hyak:/gscratch/csde/sjenness/race/data/*.rda data/")
+
+system("scp est/*.rda hyak:/gscratch/csde/sjenness/race/est")
