@@ -8,7 +8,23 @@ devtools::load_all("~/Dropbox/Dev/EpiModelHIV/EpiModelHIV")
 load("est/nwstats.prace.rda")
 
 param <- param_msm(nwstats = st,
-                   race.method = 2)
+                   race.method = 2,
+                   rgc.tprob = 0.428,
+                   ugc.tprob = 0.350,
+                   rct.tprob = 0.231,
+                   uct.tprob = 0.205,
+                   rct.asympt.int = 254.1,
+                   uct.asympt.int = 254.1,
+                   rgc.asympt.int = 245.8,
+                   ugc.asympt.int = 245.8,
+                   hiv.rgc.rr = 2.78,
+                   hiv.ugc.rr = 1.73,
+                   hiv.rct.rr = 2.78,
+                   hiv.uct.rr = 1.73,
+                   hiv.dual.rr = 0.2,
+                   cond.eff = 0.95,
+                   cond.fail.B = 0.35,
+                   cond.fail.W = 0.15)
 init <- init_msm(nwstats = st,
                  prev.B = 0.46,
                  prev.W = 0.15)

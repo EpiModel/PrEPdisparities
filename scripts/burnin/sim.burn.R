@@ -14,9 +14,9 @@ load("est/nwstats.prace.rda")
 
 param <- param_msm(nwstats = st,
                    race.method = 2,
-                   rgc.tprob = 0.458,
-                   ugc.tprob = 0.370,
-                   rct.tprob = 0.221,
+                   rgc.tprob = 0.428,
+                   ugc.tprob = 0.350,
+                   rct.tprob = 0.231,
                    uct.tprob = 0.205,
                    rct.asympt.int = 254.1,
                    uct.asympt.int = 254.1,
@@ -26,7 +26,13 @@ param <- param_msm(nwstats = st,
                    hiv.ugc.rr = 1.73,
                    hiv.rct.rr = 2.78,
                    hiv.uct.rr = 1.73,
-                   hiv.dual.rr = 0.2)
+                   hiv.dual.rr = 0.2,
+                   cond.eff = 0.95,
+                   cond.fail.B = 0.35,
+                   cond.fail.W = 0.15,
+                   cond.rr.BB = 1,
+                   cond.rr.BW = 1,
+                   cond.rr.WW = 1)
 init <- init_msm(nwstats = st,
                  prev.B = 0.46,
                  prev.W = 0.15)
