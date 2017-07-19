@@ -30,14 +30,14 @@ param <- param_msm(nwstats = st,
                    cond.eff = 0.95,
                    cond.fail.B = 0.35,
                    cond.fail.W = 0.15,
-                   cond.rr.BB = 1,
-                   cond.rr.BW = 1,
+                   cond.rr.BB = 0.5,
+                   cond.rr.BW = 0.75,
                    cond.rr.WW = 1)
 init <- init_msm(nwstats = st,
                  prev.B = 0.46,
                  prev.W = 0.15)
 control <- control_msm(simno = fsimno,
-                       nsteps = 52 * 50,
+                       nsteps = 52 * 60,
                        nsims = 16, ncores = 16,
                        verbose = FALSE)
 
