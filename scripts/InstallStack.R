@@ -13,6 +13,12 @@ system("scp hyak:/gscratch/csde/sjenness/race/data/*.rda data/")
 system("scp est/*.rda hyak:/gscratch/csde/sjenness/race/est")
 
 
+# Fitting on libra
+system("scp scripts/estimation/01.setup.R libra:~/prace")
+system("scp scripts/estimation/02.estim.R libra:~/prace")
+
+system("scp libra:~/prace/est/*.rda est/")
+
 ## 2. Burnin testing
 
 system("scp est/*.rda hyak:/gscratch/csde/sjenness/race/est")
