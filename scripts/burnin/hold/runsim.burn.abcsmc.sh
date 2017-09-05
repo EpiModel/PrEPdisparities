@@ -2,7 +2,7 @@
 
 ### User specs
 #PBS -N prace
-#PBS -l nodes=1:ppn=16,mem=50gb,feature=16core,walltime=01:00:00
+#PBS -l nodes=1:ppn=16,mem=50gb,feature=16core,walltime=05:00:00:00
 #PBS -o /gscratch/csde/sjenness/prace/out
 #PBS -e /gscratch/csde/sjenness/prace/out
 #PBS -j oe
@@ -24,4 +24,5 @@ module load r_3.2.5
 
 
 ### App
-Rscript sim.burn.R
+# Rscript sim.burn.abcsmc.R
+R CMD BATCH --vanilla sim.burn.abcsmc.R smc4.Rout

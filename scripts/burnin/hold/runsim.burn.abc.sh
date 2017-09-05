@@ -24,4 +24,4 @@ module load r_3.2.5
 
 
 ### App
-Rscript sim.burn.R
+Rscript sim.burn.abc.R
