@@ -21,7 +21,7 @@ f <- function(est) {
   }
 
   dx <- netdx(est, nsims = 1, nsteps = 500, verbose = FALSE,
-              set.control.ergm = control.simulate.ergm(MCMC.burnin = 2e6))
+              set.control.ergm = control.simulate.ergm(MCMC.burnin = 1e6))
 
   stats <- list()
   for (kk in 1:ncoef) {

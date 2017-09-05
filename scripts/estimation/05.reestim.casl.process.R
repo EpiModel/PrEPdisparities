@@ -45,7 +45,7 @@ rejection <- function(sim,
   return(out)
 }
 
-post <- rejection(fsim, threshold = 0.005)
+post <- rejection(fsim, threshold = 0.001)
 str(post)
 
 # Accepted adjusted coefficients

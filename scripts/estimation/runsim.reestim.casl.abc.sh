@@ -3,10 +3,10 @@
 ### User specs
 #PBS -N prace
 #PBS -l nodes=1:ppn=16,mem=50gb,feature=16core,walltime=01:00:00
-#PBS -o /gscratch/csde/sjenness/race/out
-#PBS -e /gscratch/csde/sjenness/race/out
+#PBS -o /gscratch/csde/sjenness/prace/out
+#PBS -e /gscratch/csde/sjenness/prace/out
 #PBS -j oe
-#PBS -d /gscratch/csde/sjenness/race
+#PBS -d /gscratch/csde/sjenness/prace
 #PBS -m n
 
 ### Standard specs
