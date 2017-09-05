@@ -56,7 +56,7 @@ param <- param_msm(nwstats = st,
                    sti.cond.fail.B = 0.39, ## 0.3 - 0.5
                    sti.cond.fail.W = 0.21, ## 0.1 - 0.3
 
-                   prep.start = Inf,
+                   prep.start = 50,
 
                    prep.aware.B = 0.5,
                    prep.aware.W = 0.5,
@@ -77,17 +77,16 @@ param <- param_msm(nwstats = st,
                    rcomp.prob = 0,
                    rcomp.adh.groups = 0:3,
                    rcomp.main.only = FALSE,
-                   rcomp.discl.only = FALSE
-                   )
+                   rcomp.discl.only = FALSE)
 
 init <- init_msm(nwstats = st,
                  prev.B = 0.46,
                  prev.W = 0.15)
 
 control <- control_msm(simno = 1,
-                       nsteps = 52 * 60,
+                       nsteps = 250,
                        nsims = 1,
-                       ncores = 1)
+                       ncores = 1, verbose = TRUE)
 
 load("est/fit.prace.rda")
 sim <- netsim(est, param, init, control)
@@ -95,7 +94,6 @@ sim <- netsim(est, param, init, control)
 
 
 # Testing/Timing ------------------------------------------------------
-
 
 dat <- initialize_msm(est, param, init, control, s = 1)
 
@@ -105,7 +103,6 @@ for (at in 2:520) {
   dat <- births_msm(dat, at)
   dat <- test_msm(dat, at)
   dat <- tx_msm(dat, at)
-  dat <- prep_msm(dat, at)
   dat <- progress_msm(dat, at)
   dat <- vl_msm(dat, at)
   dat <- simnet_msm(dat, at)
@@ -113,6 +110,7 @@ for (at in 2:520) {
   dat <- acts_msm(dat, at)
   dat <- condoms_msm(dat, at)
   dat <- position_msm(dat, at)
+  dat <- prep_msm(dat, at)
   dat <- trans_msm(dat, at)
   dat <- sti_trans(dat, at)
   dat <- sti_recov(dat, at)
