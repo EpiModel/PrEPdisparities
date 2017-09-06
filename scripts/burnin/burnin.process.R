@@ -2,6 +2,9 @@
 ## Process burn-in
 library("EpiModelHIV")
 
+
+# Simulation Analysis -----------------------------------------------------
+
 list.files("data/")
 # unlink("data/sim.n1000.rda")
 
@@ -86,3 +89,56 @@ points(x = ts, y = ct.sr, pch = 2, col = "firebrick", cex = 2)
 
 system("scp scripts/burnin/*.burn.* hyak:/gscratch/csde/sjenness/prace/")
 
+
+# Simulation Selection ----------------------------------------------------
+
+system("scp hyak:/gscratch/csde/sjenness/prace/data/*.n*.rda data/")
+
+library(EpiModelHPC)
+
+# Merge sim files
+sim <- merge_simfiles(simno = 1000, indir = "data/", ftype = "max")
+
+# Create function for selecting sim closest to target
+mean_sim <- function(sim, targets) {
+
+  nsims <- sim$control$nsims
+
+  # Initialize distance vector
+  dist <- rep(NA, nsims)
+
+  # Obtain statistics and perform multivariable Euclidean distance calculation
+  for (i in 1:nsims) {
+
+      # Create data frame to draw statistics from
+      df <- as.data.frame(x = sim, out = "vals", sim = i)
+
+      # Create a vector of statistics
+      calib <- c(mean(tail(df$i.prev.B, 52)), mean(tail(df$i.prev.W, 52)))
+
+      wts <- c(1, 1)
+
+      # Iteratively calculate distance
+      dist[i] <- sqrt(sum(((calib - targets)*wts)^2))
+  }
+
+  # Which sim minimizes distance
+  meansim <- which.min(dist)
+  return(meansim)
+}
+
+b <- prop.test(197, 454, conf.level = 0.95, correct = FALSE)
+w <- prop.test(46, 349, conf.level = 0.95, correct = FALSE)
+
+selected.sim <- mean_sim(sim, targets = c(b$estimate, w$estimate))
+selected.sim
+
+# Save burn-in file for FU sims
+sim <- get_sims(sim, sims = selected.sim)
+tail(as.data.frame(sim)$i.prev.B)
+tail(as.data.frame(sim)$i.prev.W)
+
+c(b$estimate, w$estimate)
+
+save(sim, file = "est/pracemod.burnin.rda")
+system("scp est/pracemod.burnin.rda hyak:/gscratch/csde/sjenness/prace/est/")
