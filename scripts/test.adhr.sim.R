@@ -1,11 +1,10 @@
 
 ## Test PrEP adherence sim
 
-sim <- function() {
-  med.dur <- 365
+sim <- function(med.dur = 365, cov = 0.25) {
   do.rate <- 1-(2^(-1/med.dur))
 
-  pstat <- rbinom(1000, 1, 0.25)
+  pstat <- rbinom(1000, 1, cov)
   nprep <- sum(pstat == 1)
 
   nsteps <- 365 * 10
@@ -20,16 +19,17 @@ sim <- function() {
     }
     nprep[i] <- sum(pstat == 1)
   }
+  nprep <- nprep/(1000*cov)
   return(nprep)
 }
 
-sims <- replicate(100, sim())
+med.dur <- 365
+cov <- 0.40
+sims <- replicate(100, sim(med.dur = med.dur, cov = cov))
 
-sims
-plot(nprep, type = "n", ylim = c(0, 300))
+plot(nprep, type = "n", ylim = c(0, 1))
 for (j in 1:ncol(sims)) {
-  lines(sims[, j], lwd = 0.2, type = "s")
+  lines(sims[, j], lwd = 0.3, type = "s", col = adjustcolor("seagreen", alpha.f = 0.2))
 }
-abline(h = 125, v = 365)
-
-rowMeans(sims)[365]/250
+abline(h = 0.5, v = med.dur, lty = 2)
+text(1, 0.1, round(rowMeans(sims)[med.dur], 3))
