@@ -27,9 +27,24 @@ med.dur <- 365
 cov <- 0.40
 sims <- replicate(100, sim(med.dur = med.dur, cov = cov))
 
-plot(nprep, type = "n", ylim = c(0, 1))
+par(mar = c(3,3,1,1), mgp = c(2,1,0))
+plot(x = 1, y = 1, type = "n", ylim = c(0, 1), xlim = c(0, 3650))
 for (j in 1:ncol(sims)) {
   lines(sims[, j], lwd = 0.3, type = "s", col = adjustcolor("seagreen", alpha.f = 0.2))
 }
 abline(h = 0.5, v = med.dur, lty = 2)
 text(1, 0.1, round(rowMeans(sims)[med.dur], 3))
+
+med.dur
+do.rate <- 1-(2^(-1/med.dur))
+cdf <- 1-(1-do.rate)^365
+cdf
+
+1-(1-(1-2^(-1/365)))^337
+
+# Black
+1-(1-(1-2^(-1/406)))^337
+
+1-(1-(1-2^(-1/1155)))^337
+
+
