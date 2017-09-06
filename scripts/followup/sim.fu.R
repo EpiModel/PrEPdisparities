@@ -9,37 +9,80 @@ jobno <- as.numeric(Sys.getenv("PBS_ARRAYID"))
 njobs <- as.numeric(Sys.getenv("NJOBS"))
 fsimno <- paste(simno, jobno, sep = ".")
 
-cov <- as.numeric(Sys.getenv("COV"))
-prstiint <- as.numeric(Sys.getenv("PSTIINT"))
-rc <- as.numeric(Sys.getenv("RC"))
-probtx <- as.numeric(Sys.getenv("PROBTX"))
-asymptx <- as.numeric(Sys.getenv("ASYMPTX"))
-
 ## Parameters
-load("est/nwstats.rda")
+load("est/nwstats.prace.rda")
 
 param <- param_msm(nwstats = st,
+                   race.method = 2,
+                   rgc.tprob = 0.428,
+                   ugc.tprob = 0.350,
+                   rct.tprob = 0.231,
+                   uct.tprob = 0.205,
+                   rgc.asympt.int = 205.8,
+                   ugc.asympt.int = 205.8,
+                   rct.asympt.int = 265.1,
+                   uct.asympt.int = 265.1,
+                   hiv.rgc.rr = 2.78,
+                   hiv.ugc.rr = 1.73,
+                   hiv.rct.rr = 2.78,
+                   hiv.uct.rr = 1.73,
+                   hiv.dual.rr = 0.2,
 
-                   rgc.dur.asympt = 35.11851,
-                   ugc.dur.asympt = 35.11851,
-                   rct.dur.asympt = 44.24538,
-                   uct.dur.asympt = 44.24538,
-                   hiv.rgc.rr = 2.780673,
-                   hiv.ugc.rr = 1.732363,
-                   hiv.rct.rr = 2.780673,
-                   hiv.uct.rr = 1.732363,
+                   base.ai.main.BB.rate = 0.22,
+                   base.ai.main.BW.rate = 0.22,
+                   base.ai.main.WW.rate = 0.22,
+                   base.ai.pers.BB.rate = 0.14,
+                   base.ai.pers.BW.rate = 0.14,
+                   base.ai.pers.WW.rate = 0.14,
+                   ai.scale.BB = 1.31,
+                   ai.scale.BW = 1,
+                   ai.scale.WW = 0.77,
 
-                   prep.coverage = cov,
+                   cond.eff = 0.95,
+                   cond.fail.B = 0.39,
+                   cond.fail.W = 0.21,
+
+                   cond.main.BB.prob = 0.21,
+                   cond.main.BW.prob = 0.21,
+                   cond.main.WW.prob = 0.21,
+                   cond.rr.BB = 0.71,
+                   cond.rr.BW = 1,
+                   cond.rr.WW = 1.6,
+
+                   gc.sympt.prob.tx.B = 0.86,
+                   gc.sympt.prob.tx.W = 0.96,
+                   ct.sympt.prob.tx.B = 0.72,
+                   ct.sympt.prob.tx.W = 0.85,
+                   gc.asympt.prob.tx.B = 0.10,
+                   gc.asympt.prob.tx.W = 0.19,
+                   ct.asympt.prob.tx.B = 0.05,
+                   ct.asympt.prob.tx.W = 0.10,
+
+                   sti.cond.fail.B = 0.39,
+                   sti.cond.fail.W = 0.21,
+
                    prep.start = 2601,
 
-                   rcomp.prob = rc,
-                   rcomp.adh.groups = 2:3,
+                   prep.aware.B = 0.50,
+                   prep.aware.W = 0.50,
+                   prep.access.B = 0.76,
+                   prep.access.W = 0.95,
+                   prep.rx.B = 0.63,
+                   prep.rx.W = 0.73,
+                   prep.adhr.dist.B = reallocate_pcp(reall = 0.51 - 0.784),
+                   prep.adhr.dist.W = reallocate_pcp(reall = 0.51 - 0.784),
+                   prep.class.hr = c(0.69, 0.19, 0.05),
+                   prep.discont.rate.B = 1-(2^(-1/406)),
+                   prep.discont.rate.W = 1-(2^(-1/1155)),
 
-                   prep.sti.screen.int = prstiint,
-                   prep.sti.prob.tx = probtx,
+                   prep.tst.int = 90,
+                   prep.risk.int = 182,
+                   prep.risk.reassess.method = "none",
 
-                   gc.asympt.prob.tx = asymptx,
-                   ct.asympt.prob.tx = asymptx)
+                   rcomp.prob = 0,
+                   rcomp.adh.groups = 1:3,
+                   rcomp.main.only = FALSE,
+                   rcomp.discl.only = FALSE)
 
 init <- init_msm(st)
 
@@ -52,7 +95,7 @@ control <- control_msm(simno = fsimno,
                        verbose = FALSE)
 
 ## Simulation
-netsim_hpc("est/stimod.burnin.rda", param, init, control,
+netsim_hpc("est/pracemod.burnin.rda", param, init, control,
            compress = FALSE, verbose = FALSE)
 
 process_simfiles(simno = simno, min.n = njobs,

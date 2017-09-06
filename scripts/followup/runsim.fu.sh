@@ -3,10 +3,10 @@
 ### User specs
 #PBS -N followup
 #PBS -l nodes=1:ppn=16,mem=50gb,feature=16core,walltime=01:00:00
-#PBS -o /gscratch/csde/sjenness/sti/out
-#PBS -e /gscratch/csde/sjenness/sti/out
+#PBS -o /gscratch/csde/sjenness/prace/out
+#PBS -e /gscratch/csde/sjenness/prace/out
 #PBS -j oe
-#PBS -d /gscratch/csde/sjenness/sti
+#PBS -d /gscratch/csde/sjenness/prace
 #PBS -m n
 
 ### Standard specs
@@ -20,7 +20,7 @@ ulimit -v $MEMPERTASK
 export MX_RCACHE=0
 
 ### Modules
-module load r_3.2.4
+module load r_3.2.5
 
 ### App
 Rscript sim.fu.R

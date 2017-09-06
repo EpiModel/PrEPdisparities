@@ -57,26 +57,26 @@ param <- param_msm(nwstats = st,
                    sti.cond.fail.B = 0.39,
                    sti.cond.fail.W = 0.21,
 
-                   prep.start = 2700,
+                   prep.start = 2601,
 
-                   prep.aware.B = 0.5,
-                   prep.aware.W = 0.5,
-                   prep.access.B = 0.5,
-                   prep.access.W = 0.5,
-                   prep.rx.B = 0.5,
-                   prep.rx.W = 0.5,
-                   prep.adhr.dist.B = c(0.089, 0.127, 0.784),
-                   prep.adhr.dist.W = c(0.089, 0.127, 0.784),
+                   prep.aware.B = 0.50,
+                   prep.aware.W = 0.50,
+                   prep.access.B = 0.76,
+                   prep.access.W = 0.95,
+                   prep.rx.B = 0.63,
+                   prep.rx.W = 0.73,
+                   prep.adhr.dist.B = reallocate_pcp(reall = 0.51 - 0.784),
+                   prep.adhr.dist.W = reallocate_pcp(reall = 0.51 - 0.784),
                    prep.class.hr = c(0.69, 0.19, 0.05),
-                   prep.discont.rate.B = 1-(2^(-1/365)),
-                   prep.discont.rate.W = 1-(2^(-1/365)),
+                   prep.discont.rate.B = 1-(2^(-1/406)),
+                   prep.discont.rate.W = 1-(2^(-1/1155)),
 
                    prep.tst.int = 90,
                    prep.risk.int = 182,
-                   prep.risk.reassess.method = "inst",
+                   prep.risk.reassess.method = "none",
 
                    rcomp.prob = 0,
-                   rcomp.adh.groups = 0:3,
+                   rcomp.adh.groups = 1:3,
                    rcomp.main.only = FALSE,
                    rcomp.discl.only = FALSE)
 
@@ -84,7 +84,7 @@ init <- init_msm(st)
 
 control <- control_msm(simno = 1,
                        start = 2601,
-                       nsteps = 3220,
+                       nsteps = 2700,
                        nsims = 1,
                        ncores = 1,
                        initialize.FUN = reinit_msm,
@@ -92,6 +92,8 @@ control <- control_msm(simno = 1,
 
 load("est/pracemod.burnin.rda")
 sim <- netsim(sim, param, init, control)
+
+df <- as.data.frame(sim)
 
 
 
