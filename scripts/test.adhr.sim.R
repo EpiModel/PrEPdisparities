@@ -1,7 +1,22 @@
 
-## Test PrEP adherence sim
+## PrEP discontinuation calculation
 
+# Given a certain proportion of MSM discontinuing PrEP by day X, what is the
+# daily probability of discontinuing given a geometric distribution?
+
+# Consider that 50% have discontinued after 1 year (365 days)
+# This simulates the process with a 25% coverage level
+
+# The daily drop off rate is function of the mean of the geometric distribution
+# which relates to the median in the following form
+1-(2^(-1/365))
+
+# So the mean time on PrEP associated with a median of 365 is:
+1/(1-(2^(-1/365)))
+
+# Let's check it with a simulation:
 sim <- function(med.dur = 365, cov = 0.25) {
+
   do.rate <- 1-(2^(-1/med.dur))
 
   pstat <- rbinom(1000, 1, cov)
@@ -23,10 +38,12 @@ sim <- function(med.dur = 365, cov = 0.25) {
   return(nprep)
 }
 
-med.dur <- 1155
-cov <- 0.40
-sims <- replicate(300, sim(med.dur = med.dur, cov = cov))
+# Run lots of simulations
+med.dur <- 365
+cov <- 0.25
+sims <- replicate(100, sim(med.dur = med.dur, cov = cov))
 
+# Plot the results
 par(mar = c(3,3,1,1), mgp = c(2,1,0))
 plot(x = 1, y = 1, type = "n", ylim = c(0, 1), xlim = c(0, 3650))
 for (j in 1:ncol(sims)) {
@@ -35,19 +52,43 @@ for (j in 1:ncol(sims)) {
 abline(h = 0.5, v = med.dur, lty = 2)
 text(1, 0.1, round(rowMeans(sims)[med.dur], 3))
 
-1 - rowMeans(sims)[337]
+# Next, given the CDF is: 1-(1-p)^k where p = is the rate parameter and k is the
+# day. We need that since we have the cumulative proportion at week 48 (day 337)
+# and want to calculate the rate associated with that propability
 
-med.dur
-do.rate <- 1-(2^(-1/med.dur))
-cdf <- 1-(1-do.rate)^365
+# If 50% drop off by 365 days, what proportion drop off at 337 days?
+do.rate <- 1-(2^(-1/365))
+cdf <- 1-(1-do.rate)^337
 cdf
 
-1-(1-(1-2^(-1/365)))^337
+# Rearrange to solve for median
+-((337*log(2))/log(1-cdf))
+
+# create general function
+cdf <- function(p, k) -((k*log(2))/log(1-p))
 
 # Black
-1-(1-(1-2^(-1/406)))^337
+cdf(0.4375, 337)
+
+1-(1-(1-2^(-1/405.9874)))^337
 
 # White
-1-(1-(1-2^(-1/1155)))^337
+cdf(0.1831, 337)
 
+1-(1-(1-2^(-1/1155.025)))^337
+
+
+# Plug it in and plot it
+med.dur <- cdf(0.4375, 337)
+cov <- 0.25
+sims <- replicate(200, sim(med.dur = med.dur, cov = cov))
+
+# Plot the results
+par(mar = c(3,3,1,1), mgp = c(2,1,0))
+plot(x = 1, y = 1, type = "n", ylim = c(0, 1), xlim = c(0, 3650))
+for (j in 1:ncol(sims)) {
+  lines(sims[, j], lwd = 0.3, type = "s", col = adjustcolor("seagreen", alpha.f = 0.2))
+}
+abline(h = 1 - 0.4375, v = 337, lty = 2)
+text(1, 0.1, round(1 - rowMeans(sims)[337], 3))
 
