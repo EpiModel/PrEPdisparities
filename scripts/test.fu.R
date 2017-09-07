@@ -91,17 +91,20 @@ control <- control_msm(simno = 1,
                        verbose = TRUE)
 
 load("est/pracemod.burnin.rda")
-sim <- netsim(sim, param, init, control)
+# sim <- netsim(sim, param, init, control)
 
-df <- as.data.frame(sim)
+# df <- as.data.frame(sim)
 
 
 
 # Testing/Timing ------------------------------------------------------
 
+debug(deaths_msm)
+debug(prevalence_msm)
+
 dat <- reinit_msm(sim, param, init, control, s = 1)
 
-for (at in 2701:520) {
+for (at in 2601:2700) {
   dat <- aging_msm(dat, at)
   dat <- deaths_msm(dat, at)
   dat <- births_msm(dat, at)
