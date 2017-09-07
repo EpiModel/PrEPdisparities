@@ -20,7 +20,7 @@ system("scp hyak:/gscratch/csde/sjenness/prace/data/*.rda data/")
 system("scp est/*.rda hyak:/gscratch/csde/sjenness/prace/est")
 
 
-## 3. Burnin testing
+## 3. Burnin
 
 system("scp est/*.rda hyak:/gscratch/csde/sjenness/prace/est")
 system("scp scripts/burnin/*.burn.* hyak:/gscratch/csde/sjenness/prace/")

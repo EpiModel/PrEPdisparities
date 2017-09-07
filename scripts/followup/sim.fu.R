@@ -74,16 +74,16 @@ param <- param_msm(nwstats = st,
                    prep.rx.W = prep.rx.W, #0.73,
                    prep.adhr.dist.B = reallocate_pcp(reall = 0.598 - 0.784),
                    prep.adhr.dist.W = reallocate_pcp(reall = 0.930 - 0.784),
-                   prep.class.hr = c(0.69, 0.19, 0.05),
+                   prep.class.hr = c(0.69, 0.19, 0.02),
                    prep.discont.rate.B = 1-(2^(-1/406)),
                    prep.discont.rate.W = 1-(2^(-1/1155)),
 
                    prep.tst.int = 90,
                    prep.risk.int = 182,
-                   prep.risk.reassess.method = "none",
+                   prep.risk.reassess.method = "year",
 
-                   rcomp.prob = 0,
-                   rcomp.adh.groups = 1:3,
+                   rcomp.prob = 0.41,
+                   rcomp.adh.groups = 3,
                    rcomp.main.only = FALSE,
                    rcomp.discl.only = FALSE)
 
