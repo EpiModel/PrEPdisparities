@@ -91,9 +91,9 @@ control <- control_msm(simno = 1,
                        verbose = TRUE)
 
 load("est/pracemod.burnin.rda")
-# sim <- netsim(sim, param, init, control)
+sim <- netsim(sim, param, init, control)
 
-# df <- as.data.frame(sim)
+df <- as.data.frame(sim)
 
 
 

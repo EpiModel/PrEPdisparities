@@ -64,15 +64,15 @@ param <- param_msm(nwstats = st,
                    prep.access.W = 0.95,
                    prep.rx.B = 0.63,
                    prep.rx.W = 0.73,
-                   prep.adhr.dist.B = reallocate_pcp(reall = 0.51 - 0.784),
-                   prep.adhr.dist.W = reallocate_pcp(reall = 0.51 - 0.784),
+                   prep.adhr.dist.B = reallocate_pcp(reall = 0.598 - 0.784),
+                   prep.adhr.dist.W = reallocate_pcp(reall = 0.930 - 0.784),
                    prep.class.hr = c(0.69, 0.19, 0.05),
                    prep.discont.rate.B = 1-(2^(-1/406)),
                    prep.discont.rate.W = 1-(2^(-1/1155)),
 
                    prep.tst.int = 90,
                    prep.risk.int = 182,
-                   prep.risk.reassess.method = "none",
+                   prep.risk.reassess.method = "year",
 
                    rcomp.prob = 0,
                    rcomp.adh.groups = 1:3,
@@ -84,20 +84,37 @@ init <- init_msm(nwstats = st,
                  prev.W = 0.15)
 
 control <- control_msm(simno = 1,
-                       nsteps = 250,
+                       nsteps = 520,
                        nsims = 1,
                        ncores = 1, verbose = TRUE)
 
 load("est/fit.prace.rda")
 sim <- netsim(est, param, init, control)
 
+df <- as.data.frame(sim)
+names(df)
 
+df$prepAware.B
+df$prepAware.W
+df$prepAccess.B
+df$prepAccess.W
+df$prepIndic.B
+df$prepIndic.W
+df$prepRx.B
+df$prepRx.W
+df$prepCurr.B
+df$prepCurr.W
+df$prepHiAdr.B
+df$prepHiAdr.W
+df$prepStpDx
+df$prepStpInd
+df$prepStpRand
 
 # Testing/Timing ------------------------------------------------------
 
 dat <- initialize_msm(est, param, init, control, s = 1)
 
-for (at in 2:520) {
+for (at in 2:300) {
   dat <- aging_msm(dat, at)
   dat <- deaths_msm(dat, at)
   dat <- births_msm(dat, at)
