@@ -34,3 +34,5 @@ system("scp hyak:/gscratch/csde/sjenness/prace/data/*.n*.rda data/")
 ## 4. Intervention
 
 system("scp scripts/followup/*.fu.* hyak:/gscratch/csde/sjenness/prace/")
+
+system("scp hyak:/gscratch/csde/sjenness/prace/data/*.n*.rda data/")

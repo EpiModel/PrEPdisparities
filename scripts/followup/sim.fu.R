@@ -9,6 +9,9 @@ jobno <- as.numeric(Sys.getenv("PBS_ARRAYID"))
 njobs <- as.numeric(Sys.getenv("NJOBS"))
 fsimno <- paste(simno, jobno, sep = ".")
 
+prep.rx.B <- as.numeric(Sys.getenv("RXB"))
+prep.rx.W <- as.numeric(Sys.getenv("RXW"))
+
 ## Parameters
 load("est/nwstats.prace.rda")
 
@@ -67,8 +70,8 @@ param <- param_msm(nwstats = st,
                    prep.aware.W = 0.50,
                    prep.access.B = 0.76,
                    prep.access.W = 0.95,
-                   prep.rx.B = 0.63,
-                   prep.rx.W = 0.73,
+                   prep.rx.B = prep.rx.B, #0.63,
+                   prep.rx.W = prep.rx.W, #0.73,
                    prep.adhr.dist.B = reallocate_pcp(reall = 0.51 - 0.784),
                    prep.adhr.dist.W = reallocate_pcp(reall = 0.51 - 0.784),
                    prep.class.hr = c(0.69, 0.19, 0.05),
