@@ -13,8 +13,6 @@ system("scp libra:~/prace/est/*.rda est/")
 
 ## 2. Reestimation ABC
 
-## --- rename hyak dir to prace --- ##
-
 system("scp est/*.rda hyak:/gscratch/csde/sjenness/prace/est")
 system("scp scripts/estimation/*.reestim.* hyak:/gscratch/csde/sjenness/prace/")
 
@@ -25,9 +23,7 @@ system("scp est/*.rda hyak:/gscratch/csde/sjenness/prace/est")
 ## 3. Burnin testing
 
 system("scp est/*.rda hyak:/gscratch/csde/sjenness/prace/est")
-
 system("scp scripts/burnin/*.burn.* hyak:/gscratch/csde/sjenness/prace/")
-
 system("scp hyak:/gscratch/csde/sjenness/prace/data/*.n*.rda data/")
 
 
