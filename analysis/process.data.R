@@ -8,11 +8,9 @@ library("dplyr")
 source("analysis/fx.R")
 
 # unlink("data/*")
-system("scp hyak:/gscratch/csde/sjenness/sti/data/*.rda data/")
-system("scp hyak:/gscratch/csde/sjenness/sti/data/sim.n200[0-9].rda data/")
-system("scp hyak:/gscratch/csde/sjenness/sti/data/sim.n201[0-9].rda data/")
+system("scp hyak:/gscratch/csde/sjenness/prace/data/*.rda data/")
 
-( fn <- list.files("data/", full.names = TRUE) )
+(fn <- list.files("data/", full.names = TRUE))
 
 # Truncate n1000 data
 fn <- list.files("data/", pattern = "n10[0-9][0-9]", full.names = TRUE)
@@ -23,6 +21,41 @@ for (i in fn) {
   save(sim, file = i, compress = TRUE)
   cat("*")
 }
+
+load("data/sim.n1999.rda")
+par(mar = c(3,3,1,1), mgp = c(2,1,0))
+plot(sim, y = c("i.prev.W", "i.prev.B"), qnts = 0.5, ylim = c(0, 0.5),
+     mean.smooth = FALSE, mean.lwd = 1, legend = TRUE)
+
+df <- as.data.frame(sim)
+tail(df$i.prev.B)
+head(df$i.prev.B)
+tail(df$i.prev.W)
+
+
+load("data/sim.n2000.rda")
+plot(sim, y = c("i.prev.W", "i.prev.B"), qnts = 0.5, ylim = c(0, 0.5),
+     mean.smooth = FALSE, mean.lwd = 1, legend = FALSE)
+
+plot(sim, y = "prepAware.B", ylim = 0:1)
+plot(sim, y = "prepAware.W", ylim = 0:1)
+
+plot(sim, y = "prepAccess.B", ylim = 0:1)
+plot(sim, y = "prepAccess.W", ylim = 0:1)
+
+plot(sim, y = "prepRx.B")
+plot(sim, y = "prepRx.W")
+
+plot(sim, y = "prepHiAdr.B")
+plot(sim, y = "prepHiAdr.W")
+
+
+# rescale the summary stat outputs to be conditional on the last level
+# plus adding overall prepCov stat that is unconditional
+# add some sort of tracking of discontinuation over time too
+
+
+# Extras ------------------------------------------------------------------
 
 # Remove unneeded variables n1000 data
 fn <- list.files("data/", pattern = "n10[0-9][0-9]", full.names = TRUE)
