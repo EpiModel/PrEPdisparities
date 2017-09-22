@@ -51,3 +51,53 @@ ggplot(joy, aes(x=value, y=label, fill=label)) +
   theme_joy() +
   theme(axis.title.y = element_blank(),
         legend.position='none')
+
+
+# set the `rel_min_height` argument to remove tails
+ggplot(iris, aes(x = Sepal.Length, y = Species)) +
+  geom_joy(rel_min_height = 0.005) +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  scale_x_continuous(expand = c(0.01, 0)) +
+  theme_joy()
+
+# set the `scale` to determine how much overlap there is among the plots
+ggplot(diamonds, aes(x = price, y = cut)) +
+  geom_joy(scale = 4) +
+  scale_y_discrete(expand=c(0.01, 0)) +
+  scale_x_continuous(expand=c(0.01, 0)) +
+  theme_joy()
+
+# the same figure with colors, and using the ggplot2 density stat
+ggplot(diamonds, aes(x = price, y = cut, fill = cut, height = ..density..)) +
+  geom_joy(scale = 4, stat = "density") +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  scale_x_continuous(expand = c(0.01, 0)) +
+  scale_fill_brewer(palette = 4) +
+  theme_joy() + theme(legend.position = "none")
+
+# use geom_joy2() instead of geom_joy() for solid polygons
+ggplot(iris, aes(x = Sepal.Length, y = Species)) +
+  geom_joy2() +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  scale_x_continuous(expand = c(0.01, 0)) +
+  theme_joy()
+
+
+library(tidyverse)
+library(forcats)
+
+ce <- mutate(Catalan_elections, YearFct = fct_rev(as.factor(Year)))
+
+ggplot(ce, aes(y = YearFct)) +
+geom_joy(aes(x = Percent, fill = paste(YearFct, Option)),
+         alpha = .8, color = "white", from = 0, to = 100) +
+labs(x = "Vote (%)",
+     y = "Election Year") +
+scale_y_discrete(expand = c(0.01, 0)) +
+scale_x_continuous(expand = c(0.01, 0)) +
+scale_fill_cyclical(breaks = c("1980 Indy", "1980 Unionist"),
+                    labels = c(`1980 Indy` = "Indy", `1980 Unionist` = "Unionist"),
+                    values = c("#ff0000", "#0000ff", "#ff8080", "#8080ff"),
+                    name = "Option", guide = "legend") +
+theme_joy(grid = FALSE)
+
