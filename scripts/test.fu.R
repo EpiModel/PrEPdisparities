@@ -61,19 +61,19 @@ param <- param_msm(nwstats = st,
 
                    prep.aware.B = 0.50,
                    prep.aware.W = 0.50,
-                   prep.access.B = 0.76,
+                   prep.access.B = 0.95, #0.76
                    prep.access.W = 0.95,
-                   prep.rx.B = 0.63,
+                   prep.rx.B = 0.73, #0.63,
                    prep.rx.W = 0.73,
-                   prep.adhr.dist.B = reallocate_pcp(reall = 0.51 - 0.784),
-                   prep.adhr.dist.W = reallocate_pcp(reall = 0.51 - 0.784),
+                   prep.adhr.dist.B = reallocate_pcp(reall = 0.930 - 0.784), # 0.598
+                   prep.adhr.dist.W = reallocate_pcp(reall = 0.930 - 0.784),
                    prep.class.hr = c(0.69, 0.19, 0.05),
-                   prep.discont.rate.B = 1-(2^(-1/406)),
+                   prep.discont.rate.B = 1-(2^(-1/1155)), # 406
                    prep.discont.rate.W = 1-(2^(-1/1155)),
 
                    prep.tst.int = 90,
                    prep.risk.int = 182,
-                   prep.risk.reassess.method = "none",
+                   prep.risk.reassess.method = "year",
 
                    rcomp.prob = 0,
                    rcomp.adh.groups = 1:3,
@@ -84,7 +84,7 @@ init <- init_msm(st)
 
 control <- control_msm(simno = 1,
                        start = 2601,
-                       nsteps = 2700,
+                       nsteps = 2800,
                        nsims = 1,
                        ncores = 1,
                        initialize.FUN = reinit_msm,
@@ -104,7 +104,7 @@ debug(prevalence_msm)
 
 dat <- reinit_msm(sim, param, init, control, s = 1)
 
-for (at in 2601:2700) {
+for (at in 2601:2800) {
   dat <- aging_msm(dat, at)
   dat <- deaths_msm(dat, at)
   dat <- births_msm(dat, at)

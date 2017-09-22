@@ -9,8 +9,16 @@ jobno <- as.numeric(Sys.getenv("PBS_ARRAYID"))
 njobs <- as.numeric(Sys.getenv("NJOBS"))
 fsimno <- paste(simno, jobno, sep = ".")
 
+prep.aware.B <- as.numeric(Sys.getenv("AWAB"))
+prep.aware.W <- as.numeric(Sys.getenv("AWAW"))
+prep.access.B <- as.numeric(Sys.getenv("ACCB"))
+prep.access.W <- as.numeric(Sys.getenv("ACCW"))
 prep.rx.B <- as.numeric(Sys.getenv("RXB"))
 prep.rx.W <- as.numeric(Sys.getenv("RXW"))
+prep.hi.adr.B <- as.numeric(Sys.getenv("HIAB"))
+prep.hi.adr.W <- as.numeric(Sys.getenv("HIAW"))
+prep.dist.B <- as.numeric(Sys.getenv("DISB"))
+prep.dist.W <- as.numeric(Sys.getenv("DISW"))
 
 ## Parameters
 load("est/nwstats.prace.rda")
@@ -66,24 +74,24 @@ param <- param_msm(nwstats = st,
 
                    prep.start = 2601,
 
-                   prep.aware.B = 0.50,
-                   prep.aware.W = 0.50,
-                   prep.access.B = 0.76,
-                   prep.access.W = 0.95,
+                   prep.aware.B = prep.aware.B, #0.50
+                   prep.aware.W = prep.aware.W, #0.50
+                   prep.access.B = prep.access.B, #0.76,
+                   prep.access.W = prep.access.W, #0.95,
                    prep.rx.B = prep.rx.B, #0.63,
                    prep.rx.W = prep.rx.W, #0.73,
-                   prep.adhr.dist.B = reallocate_pcp(reall = 0.598 - 0.784),
-                   prep.adhr.dist.W = reallocate_pcp(reall = 0.930 - 0.784),
+                   prep.adhr.dist.B = reallocate_pcp(reall = prep.hi.adr.B - 0.784), # 0.598
+                   prep.adhr.dist.W = reallocate_pcp(reall = prep.hi.adr.W - 0.784), # 0.930
                    prep.class.hr = c(0.69, 0.19, 0.02),
-                   prep.discont.rate.B = 1-(2^(-1/406)),
-                   prep.discont.rate.W = 1-(2^(-1/1155)),
+                   prep.discont.rate.B = 1-(2^(-1/prep.dist.B)), # 406
+                   prep.discont.rate.W = 1-(2^(-1/prep.dist.W)), # 1155
 
                    prep.tst.int = 90,
                    prep.risk.int = 182,
                    prep.risk.reassess.method = "year",
 
                    rcomp.prob = 0.41,
-                   rcomp.adh.groups = 3,
+                   rcomp.adh.groups = 2:3,
                    rcomp.main.only = FALSE,
                    rcomp.discl.only = FALSE)
 
