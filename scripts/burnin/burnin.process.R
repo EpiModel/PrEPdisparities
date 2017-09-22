@@ -130,15 +130,16 @@ mean_sim <- function(sim, targets) {
 b <- prop.test(197, 454, conf.level = 0.95, correct = FALSE)
 w <- prop.test(46, 349, conf.level = 0.95, correct = FALSE)
 
-selected.sim <- mean_sim(sim, targets = c(b$estimate, w$estimate))
+selected.sim <- mean_sim(sim, targets = c(b$estimate, w$estimate)-0.001)
 selected.sim
 
 # Save burn-in file for FU sims
-sim <- get_sims(sim, sims = selected.sim)
-tail(as.data.frame(sim)$i.prev.B)
-tail(as.data.frame(sim)$i.prev.W)
+sel.sim <- get_sims(sim, sims = selected.sim)
+tail(as.data.frame(sel.sim)$i.prev.B)
+tail(as.data.frame(sel.sim)$i.prev.W)
 
 c(b$estimate, w$estimate)
 
+sim <- sel.sim
 save(sim, file = "est/pracemod.burnin.rda")
 system("scp est/pracemod.burnin.rda hyak:/gscratch/csde/sjenness/prace/est/")
