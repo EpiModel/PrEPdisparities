@@ -1,21 +1,5 @@
 
-## P2 functions
-
-gc_pia_vec <- function(sim.base, sim.comp) {
-
-  sim.base <- truncate_sim(sim.base, at = 2600)
-  sim.comp <- truncate_sim(sim.comp, at = 2600)
-
-  ir.base.gc <- unname(colMeans(sim.base$epi$ir100.gc)) * 1000
-
-  ir.comp.gc <- unname(colMeans(sim.comp$epi$ir100.gc, na.rm = TRUE)) * 1000
-  vec.nia.gc <- round(ir.base.gc - ir.comp.gc, 1)
-
-  vec.pia.gc <- vec.nia.gc/ir.base.gc
-
-  return(vec.pia.gc)
-}
-
+## PrEP Race Functions
 
 epi_stats <- function(sim.base,
                       sim.comp = NULL,
@@ -25,197 +9,192 @@ epi_stats <- function(sim.base,
 
   # Base scenario -------------------------------------------------------
 
-  # sim.base <- truncate_sim(sim.base, at = 2600)
-
   # prevalence
-  i.prev <- as.numeric(sim.base$epi$i.prev[at, ])
-  prev.base <- round(data.frame(median = median(i.prev),
-                                ql = quantile(i.prev, qnt.low, names = FALSE),
-                                qu = quantile(i.prev, qnt.high, names = FALSE)), 3)
+  i.prev.W <- as.numeric(sim.base$epi$i.prev.W[at, ])
+  prev.base.W <- round(data.frame(median = median(i.prev.W),
+                                  ql = quantile(i.prev.W, qnt.low, names = FALSE),
+                                  qu = quantile(i.prev.W, qnt.high, names = FALSE)), 3)
+
+  i.prev.B <- as.numeric(sim.base$epi$i.prev.B[at, ])
+  prev.base.B <- round(data.frame(median = median(i.prev.B),
+                                  ql = quantile(i.prev.B, qnt.low, names = FALSE),
+                                  qu = quantile(i.prev.B, qnt.high, names = FALSE)), 3)
 
   # incidence
-  haz <- as.numeric(colMeans(tail(sim.base$epi$ir100, 52)))
-  haz.base <- round(data.frame(median = median(haz),
-                               ql = quantile(haz, qnt.low, names = FALSE),
-                               qu = quantile(haz, qnt.high, names = FALSE)), 2)
+  haz.W <- as.numeric(colMeans(tail(sim.base$epi$ir100.W, 52)))
+  haz.base.W <- round(data.frame(median = median(haz.W),
+                                 ql = quantile(haz.W, qnt.low, names = FALSE),
+                                 qu = quantile(haz.W, qnt.high, names = FALSE)), 2)
 
-  ir.base <- unname(colMeans(sim.base$epi$ir100)) * 1000
-  incid.base <- unname(colSums(sim.base$epi$incid))
+  haz.B <- as.numeric(colMeans(tail(sim.base$epi$ir100.B, 52)))
+  haz.base.B <- round(data.frame(median = median(haz.B),
+                                 ql = quantile(haz.B, qnt.low, names = FALSE),
+                                 qu = quantile(haz.B, qnt.high, names = FALSE)), 2)
 
-  haz.gc <- as.numeric(colMeans(tail(sim.base$epi$ir100.gc, 52)))
-  haz.base.gc <- round(data.frame(median = median(haz.gc),
-                                  ql = quantile(haz.gc, qnt.low, names = FALSE),
-                                  qu = quantile(haz.gc, qnt.high, names = FALSE)), 2)
-  ir.base.gc <- unname(colMeans(sim.base$epi$ir100.gc)) * 1000
-  incid.base.gc <- unname(colSums(sim.base$epi$incid.gc))
+  incid.base.W <- unname(colSums(sim.base$epi$incid.W))
+  incid.base.B <- unname(colSums(sim.base$epi$incid.B))
 
-  haz.ct <- as.numeric(colMeans(tail(sim.base$epi$ir100.ct, 52)))
-  haz.base.ct <- round(data.frame(median = median(haz.ct),
-                                  ql = quantile(haz.ct, qnt.low, names = FALSE),
-                                  qu = quantile(haz.ct, qnt.high, names = FALSE)), 2)
-  ir.base.ct <- unname(colMeans(sim.base$epi$ir100.ct)) * 1000
-  incid.base.ct <- unname(colSums(sim.base$epi$incid.ct))
-
+  disp.ind <- haz.B/haz.W
+  disp.ind.base <- round(data.frame(median = median(disp.ind),
+                                    ql = quantile(disp.ind, qnt.low, names = FALSE),
+                                    qu = quantile(disp.ind, qnt.high, names = FALSE)), 2)
 
   # Comparison scenario -------------------------------------------------
 
-
   if (!is.null(sim.comp)) {
 
-    # sim.comp <- truncate_sim(sim.comp, at = 2600)
+    sim.comp <- mutate_epi(sim.comp, percPrEP.B = prepCurr.B / num.B)
+    sim.comp <- mutate_epi(sim.comp, percPrEP.W = prepCurr.W / num.W)
 
-    # # prevalence
-    i.prev <- as.numeric(sim.comp$epi$i.prev[at, ])
-    out.prev <- round(data.frame(median = median(i.prev),
-                                  ql = quantile(i.prev, qnt.low, names = FALSE),
-                                  qu = quantile(i.prev, qnt.high, names = FALSE)), 3)
+    percP.W <- as.numeric(colMeans(tail(sim.comp$epi$percPrEP.W, 52)))
+    out.percP.W <- round(data.frame(median = median(percP.W),
+                                    ql = quantile(percP.W, qnt.low, names = FALSE),
+                                    qu = quantile(percP.W, qnt.high, names = FALSE)), 3)
+
+    percP.B <- as.numeric(colMeans(tail(sim.comp$epi$percPrEP.B, 52)))
+    out.percP.B <- round(data.frame(median = median(percP.B),
+                                  ql = quantile(percP.B, qnt.low, names = FALSE),
+                                  qu = quantile(percP.B, qnt.high, names = FALSE)), 3)
+
+    # prevalence
+    i.prev.W <- as.numeric(sim.comp$epi$i.prev.W[at, ])
+    out.prev.W <- round(data.frame(median = median(i.prev.W),
+                                   ql = quantile(i.prev.W, qnt.low, names = FALSE),
+                                   qu = quantile(i.prev.W, qnt.high, names = FALSE)), 3)
+
+    i.prev.B <- as.numeric(sim.comp$epi$i.prev.B[at, ])
+    out.prev.B <- round(data.frame(median = median(i.prev.B),
+                                   ql = quantile(i.prev.B, qnt.low, names = FALSE),
+                                   qu = quantile(i.prev.B, qnt.high, names = FALSE)), 3)
 
 
     # incidence
-    haz <- as.numeric(colMeans(tail(sim.comp$epi$ir100, 52)))
-    out.haz <- round(data.frame(median = median(haz, na.rm = TRUE),
-                                 ql = quantile(haz, qnt.low, names = FALSE, na.rm = TRUE),
-                                 qu = quantile(haz, qnt.high, names = FALSE, na.rm = TRUE)), 2)
-    haz.gc <- as.numeric(colMeans(tail(sim.comp$epi$ir100.gc, 52)))
-    out.haz.gc <- round(data.frame(median = median(haz.gc, na.rm = TRUE),
-                                    ql = quantile(haz.gc, qnt.low, names = FALSE, na.rm = TRUE),
-                                    qu = quantile(haz.gc, qnt.high, names = FALSE, na.rm = TRUE)), 2)
-    haz.ct <- as.numeric(colMeans(tail(sim.comp$epi$ir100.ct, 52)))
-    out.haz.ct <- round(data.frame(median = median(haz.ct, na.rm = TRUE),
-                                    ql = quantile(haz.ct, qnt.low, names = FALSE, na.rm = TRUE),
-                                    qu = quantile(haz.ct, qnt.high, names = FALSE, na.rm = TRUE)), 2)
+    haz.W <- as.numeric(colMeans(tail(sim.comp$epi$ir100.W, 52)))
+    out.haz.W <- round(data.frame(median = median(haz.W, na.rm = TRUE),
+                                  ql = quantile(haz.W, qnt.low, names = FALSE, na.rm = TRUE),
+                                  qu = quantile(haz.W, qnt.high, names = FALSE, na.rm = TRUE)), 2)
 
+    haz.B <- as.numeric(colMeans(tail(sim.comp$epi$ir100.B, 52)))
+    out.haz.B <- round(data.frame(median = median(haz.B, na.rm = TRUE),
+                                  ql = quantile(haz.B, qnt.low, names = FALSE, na.rm = TRUE),
+                                  qu = quantile(haz.B, qnt.high, names = FALSE, na.rm = TRUE)), 2)
 
+    disp.ind <- haz.B/haz.W
+    out.disp.ind <- round(data.frame(median = median(disp.ind),
+                                     ql = quantile(disp.ind, qnt.low, names = FALSE),
+                                     qu = quantile(disp.ind, qnt.high, names = FALSE)), 2)
 
     # HR
-    num <- unname(colMeans(tail(sim.comp$epi$ir100, 52)))
-    denom <- unname(colMeans(tail(sim.base$epi$ir100, 52)))
-    vec.hr <- num/denom
-    out.hr <- round(data.frame(median = median(vec.hr, na.rm = TRUE),
-                               ql = quantile(vec.hr, qnt.low, names = FALSE, na.rm = TRUE),
-                               qu = quantile(vec.hr, qnt.high, names = FALSE, na.rm = TRUE)), 2)
+    num.W <- unname(colMeans(tail(sim.comp$epi$ir100.W, 52)))
+    denom.W <- unname(colMeans(tail(sim.base$epi$ir100.W, 52)))
+    vec.hr.W <- num.W/denom.W
+    out.hr.W <- round(data.frame(median = median(vec.hr.W, na.rm = TRUE),
+                                 ql = quantile(vec.hr.W, qnt.low, names = FALSE, na.rm = TRUE),
+                                 qu = quantile(vec.hr.W, qnt.high, names = FALSE, na.rm = TRUE)), 2)
 
-    num.gc <- unname(colMeans(tail(sim.comp$epi$ir100.gc, 52)))
-    denom.gc <- unname(colMeans(tail(sim.base$epi$ir100.gc, 52)))
-    vec.hr.gc <- num.gc/denom.gc
-    vec.hr.gc <- vec.hr.gc[vec.hr.gc < Inf]
-    out.hr.gc <- round(data.frame(median = median(vec.hr.gc, na.rm = TRUE),
-                                  ql = quantile(vec.hr.gc, qnt.low, names = FALSE, na.rm = TRUE),
-                                  qu = quantile(vec.hr.gc, qnt.high, names = FALSE, na.rm = TRUE)), 2)
+    num.B <- unname(colMeans(tail(sim.comp$epi$ir100.B, 52)))
+    denom.B <- unname(colMeans(tail(sim.base$epi$ir100.B, 52)))
+    vec.hr.B <- num.B/denom.B
+    out.hr.B <- round(data.frame(median = median(vec.hr.B, na.rm = TRUE),
+                                 ql = quantile(vec.hr.B, qnt.low, names = FALSE, na.rm = TRUE),
+                                 qu = quantile(vec.hr.B, qnt.high, names = FALSE, na.rm = TRUE)), 2)
 
-    num.ct <- unname(colMeans(tail(sim.comp$epi$ir100.ct, 52)))
-    denom.ct <- unname(colMeans(tail(sim.base$epi$ir100.ct, 52)))
-    vec.hr.ct <- num.ct/denom.ct
-    vec.hr.ct <- vec.hr.ct[vec.hr.ct < Inf]
-    out.hr.ct <- round(data.frame(median = median(vec.hr.ct, na.rm = TRUE),
-                                  ql = quantile(vec.hr.ct, qnt.low, names = FALSE, na.rm = TRUE),
-                                  qu = quantile(vec.hr.ct, qnt.high, names = FALSE, na.rm = TRUE)), 2)
+    prev.ind <- vec.hr.B/vec.hr.W
+    out.prev.ind <- round(data.frame(median = median(prev.ind, na.rm = TRUE),
+                                     ql = quantile(prev.ind, qnt.low, names = FALSE, na.rm = TRUE),
+                                     qu = quantile(prev.ind, qnt.high, names = FALSE, na.rm = TRUE)), 2)
 
     # NIA
-    ir.comp <- unname(colMeans(sim.comp$epi$ir100)) * 1000
-    vec.nia <- round(ir.base - ir.comp, 1)
-    # out.nia <- round(data.frame(median = median(vec.nia),
-    #                             ql = quantile(vec.nia, qnt.low, names = FALSE),
-    #                             qu = quantile(vec.nia, qnt.high, names = FALSE)), 0)
+    incid.comp.W <- unname(colSums(sim.comp$epi$incid.W))
+    vec.nia.W <- incid.base.W - incid.comp.W
 
-    ir.comp.gc <- unname(colMeans(sim.comp$epi$ir100.gc)) * 1000
-    vec.nia.gc <- round(ir.base.gc - ir.comp.gc, 1)
-
-    ir.comp.ct <- unname(colMeans(sim.comp$epi$ir100.ct)) * 1000
-    vec.nia.ct <- round(ir.base.ct - ir.comp.ct, 1)
+    incid.comp.B <- unname(colSums(sim.comp$epi$incid.B))
+    vec.nia.B <- incid.base.B - incid.comp.B
 
     # PIA
-    vec.pia <- vec.nia/ir.base
-    out.pia <- round(data.frame(median = median(vec.pia),
-                                ql = quantile(vec.pia, qnt.low, names = FALSE),
-                                qu = quantile(vec.pia, qnt.high, names = FALSE)), 3)
+    vec.pia.W <- vec.nia.W/incid.base.W
+    out.pia.W <- round(data.frame(median = median(vec.pia.W),
+                                ql = quantile(vec.pia.W, qnt.low, names = FALSE),
+                                qu = quantile(vec.pia.W, qnt.high, names = FALSE)), 3)
 
-    vec.pia.gc <- vec.nia.gc/ir.base.gc
-    vec.pia.gc <- vec.pia.gc[vec.pia.gc > -Inf]
-    out.pia.gc <- round(data.frame(median = median(vec.pia.gc),
-                                   ql = quantile(vec.pia.gc, qnt.low, names = FALSE),
-                                   qu = quantile(vec.pia.gc, qnt.high, names = FALSE)), 3)
+    vec.pia.B <- vec.nia.B/incid.base.B
+    out.pia.B <- round(data.frame(median = median(vec.pia.B),
+                                  ql = quantile(vec.pia.B, qnt.low, names = FALSE),
+                                  qu = quantile(vec.pia.B, qnt.high, names = FALSE)), 3)
 
-    vec.pia.ct <- vec.nia.ct/ir.base.ct
-    vec.pia.ct <- vec.pia.ct[vec.pia.ct > -Inf]
-    out.pia.ct <- round(data.frame(median = median(vec.pia.ct),
-                                   ql = quantile(vec.pia.ct, qnt.low, names = FALSE),
-                                   qu = quantile(vec.pia.ct, qnt.high, names = FALSE)), 3)
 
-    # browser()
     # NNT
-    py.on.prep <- unname(colSums(sim.comp$epi$prepCurr))/52
-    vec.nnt <- py.on.prep/(median(incid.base) - unname(colSums(sim.comp$epi$incid)))
-    out.nnt <- round(data.frame(median = median(vec.nnt),
-                                ql = quantile(vec.nnt, qnt.low, names = FALSE),
-                                qu = quantile(vec.nnt, qnt.high, names = FALSE)), 1)
+    py.on.prep.W <- unname(colSums(sim.comp$epi$prepCurr.W))/52
+    vec.nnt.W <- py.on.prep.W/(median(incid.base.W) - unname(colSums(sim.comp$epi$incid.W)))
+    out.nnt.W <- round(data.frame(median = median(vec.nnt.W),
+                                  ql = quantile(vec.nnt.W, qnt.low, names = FALSE),
+                                  qu = quantile(vec.nnt.W, qnt.high, names = FALSE)), 1)
+
+    py.on.prep.B <- unname(colSums(sim.comp$epi$prepCurr.B))/52
+    vec.nnt.B <- py.on.prep.B/(median(incid.base.B) - unname(colSums(sim.comp$epi$incid.B)))
+    out.nnt.B <- round(data.frame(median = median(vec.nnt.B),
+                                  ql = quantile(vec.nnt.B, qnt.low, names = FALSE),
+                                  qu = quantile(vec.nnt.B, qnt.high, names = FALSE)), 1)
 
 
-    vec.nnt.gc <- py.on.prep / (median(incid.base.gc) - unname(colSums(sim.comp$epi$incid.gc)))
-    out.nnt.gc <- round(data.frame(median = median(vec.nnt.gc),
-                                   ql = quantile(vec.nnt.gc, qnt.low, names = FALSE),
-                                   qu = quantile(vec.nnt.gc, qnt.high, names = FALSE)), 1)
+    cat("\nPercent on PrEP W:")
+    print(t(out.percP.W))
 
-    vec.nnt.ct <- py.on.prep / (median(incid.base.ct) - unname(colSums(sim.comp$epi$incid.ct)))
-    out.nnt.ct <- round(data.frame(median = median(vec.nnt.ct),
-                                   ql = quantile(vec.nnt.ct, qnt.low, names = FALSE),
-                                   qu = quantile(vec.nnt.ct, qnt.high, names = FALSE)), 1)
+    cat("\nPercent on PrEP B:")
+    print(t(out.percP.B))
 
-    cat("\n\nHIV Prevalence:")
-    print(t(out.prev))
+    cat("\nHIV Prevalence W:")
+    print(t(out.prev.W))
 
-    cat("\nHIV Incidence:")
-    print(t(out.haz))
+    cat("\nHIV Prevalence B:")
+    print(t(out.prev.B))
 
-    cat("\nHIV HR:")
-    print(t(out.hr))
+    cat("\nHIV Incidence W:")
+    print(t(out.haz.W))
 
-    # cat("\nHIV NIA:")
-    # print(t(out.nia))
+    cat("\nHIV Incidence B:")
+    print(t(out.haz.B))
 
-    cat("\nHIV PIA:")
-    print(t(out.pia))
+    cat("\nDisparity Index:")
+    print(t(out.disp.ind))
 
-    cat("\nHIV NNT:")
-    print(t(out.nnt))
+    cat("\nHIV Hazard Ratio W:")
+    print(t(out.hr.W))
 
-    cat("\nGC Incidence:")
-    print(t(out.haz.gc))
+    cat("\nHIV Hazard Ratio B:")
+    print(t(out.hr.B))
 
-    cat("\nGC HR:")
-    print(t(out.hr.gc))
+    cat("\nPrevention Index:")
+    print(t(out.prev.ind))
 
-    cat("\nGC PIA:")
-    print(t(out.pia.gc))
+    cat("\nHIV PIA W:")
+    print(t(out.pia.W))
 
-    cat("\nGC NNT:")
-    print(t(out.nnt.gc))
+    cat("\nHIV PIA B:")
+    print(t(out.pia.B))
 
-    cat("\nCT Incidence:")
-    print(t(out.haz.ct))
+    cat("\nHIV NNT W:")
+    print(t(out.nnt.W))
 
-    cat("\nCT HR:")
-    print(t(out.hr.ct))
-
-    cat("\nCT PIA:")
-    print(t(out.pia.ct))
-
-    cat("\nCT NNT:")
-    print(t(out.nnt.ct))
+    cat("\nHIV NNT B:")
+    print(t(out.nnt.B))
 
   } else {
 
-    cat("\n\nHIV Prevalence:")
-    print(t(prev.base))
+    cat("\nHIV Prevalence W:")
+    print(t(prev.base.W))
 
-    cat("\nHIV Incidence:")
-    print(t(haz.base))
+    cat("\nHIV Prevalence B:")
+    print(t(prev.base.B))
 
-    cat("\nGC Incidence:")
-    print(t(haz.base.gc))
+    cat("\nHIV Incidence W:")
+    print(t(haz.base.W))
 
-    cat("\nCT Incidence:")
-    print(t(haz.base.ct))
+    cat("\nHIV Incidence B:")
+    print(t(haz.base.B))
+
+    cat("\nDisparity Index:")
+    print(t(disp.ind.base))
 
   }
 
