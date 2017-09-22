@@ -57,4 +57,6 @@ sim$param$prep.aware.B
 epi_stats(sim.base, sim, at = 520, qnt.low = 0.025, qnt.high = 0.975)
 
 # Joint: Obs B x 200%
-
+load("data/f1/sim.n2162.rda")
+sim$param$prep.aware.B
+epi_stats(sim.base, sim, at = 520, qnt.low = 0.025, qnt.high = 0.975)
