@@ -69,10 +69,11 @@ library(ggplot2)
 library(ggjoy)
 
 pal <- viridis::viridis(5)
+pal <- RColorBrewer::brewer.pal(11, "PRGn")
 
 p1 <- ggplot(ndf, aes(y = param)) +
   geom_joy(aes(x = prev, fill = paste(param, race)),
-           alpha = 0.9, scale = 4, rel_min_height = 0.001, col = "white", lwd = 0.5) +
+           alpha = 0.95, scale = 4, rel_min_height = 0.001, col = "white", lwd = 0.5) +
   theme_joy(grid = TRUE) +
   xlab("HIV Prevalence") +
   ylab("BMSM Relative Continuum") +
@@ -80,7 +81,7 @@ p1 <- ggplot(ndf, aes(y = param)) +
   scale_x_continuous(expand = c(0.01, 0)) +
   scale_fill_cyclical(breaks = c("2 B", "2 W"),
                       labels = c(`2 B` = "B", `2 W` = "W"),
-                      values = c("#ff0000", "#0000ff", "#ff8080", "#8080ff"),
+                      values = c(pal[2], pal[9], pal[3], pal[10]),
                       name = "Race", guide = "legend")
 
 p2 <- ggplot(ndf, aes(y = param)) +
@@ -93,7 +94,7 @@ p2 <- ggplot(ndf, aes(y = param)) +
   scale_x_continuous(expand = c(0.01, 0)) +
   scale_fill_cyclical(breaks = c("2 B", "2 W"),
                       labels = c(`2 B` = "B", `2 W` = "W"),
-                      values = c("#ff0000", "#0000ff", "#ff8080", "#8080ff"),
+                      values = c(pal[2], pal[9], pal[3], pal[10]),
                       name = "Race", guide = "legend")
 
 library(gridExtra)
