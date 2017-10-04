@@ -23,7 +23,7 @@ for (i in seq_along(sims)) {
 
   haz.W <- as.numeric(colMeans(tail(sim$epi$ir100.W, 52)))
   haz.B <- as.numeric(colMeans(tail(sim$epi$ir100.B, 52)))
-  disp.ind <- haz.B/haz.W
+  disp.ind <- haz.B - haz.W
 
   num.W <- unname(colMeans(tail(sim$epi$ir100.W, 52)))
   denom.W <- unname(colMeans(tail(sim.base$epi$ir100.W, 52)))
@@ -33,7 +33,7 @@ for (i in seq_along(sims)) {
   denom.B <- unname(colMeans(tail(sim.base$epi$ir100.B, 52)))
   vec.hr.B <- num.B/denom.B
 
-  prev.ind <- vec.hr.B/vec.hr.W
+  prev.ind <- vec.hr.B - vec.hr.W
 
   new.df <- data.frame(scenario = sims[i],
                        simno = 1:sim$control$nsims,
@@ -76,28 +76,43 @@ pal1 <- viridis(5)
 pal2 <- adjustcolor(pal1, alpha.f = 0.25)
 
 library(ggplot2)
+df$prev.ind.1 <- ifelse(df$prev.ind >= 0, ">= 0", "< 0")
+
 ggplot(df, aes(param, disp.ind)) +
   geom_jitter(aes(fill = prev.ind), shape = 21, color = "black",
               size = 2.5, alpha = 0.25, width = 0.05) +
-  # stat_smooth(col = "black", lwd = 0.5, se = FALSE, method = "loess") +
-  scale_fill_viridis(discrete = FALSE, option = "B", direction = -1) +
+  stat_smooth(col = "black", lwd = 0.5, se = FALSE, method = "loess") +
+  scale_fill_viridis(discrete = FALSE, option = "D", direction = -1) +
   labs(fill = "Prevention\nIndex", size = "BMSM\nIR",
        y = "Disparity Index", x = "Relative BMSM Continuum") +
-  ylim(1, 12) +
+  # ylim(0, 12) +
   geom_vline(xintercept = 1, lwd = 0.5, lty = 2) +
+  geom_hline(yintercept = 6.08, lwd = 0.5, lty = 2) +
+  theme_minimal()
+
+ggplot(df, aes(param, disp.ind)) +
+  geom_jitter(aes(fill = prev.ind.1), shape = 21, color = "white",
+              size = 2.5, alpha = 0.25, width = 0.05) +
+  stat_smooth(col = "black", lwd = 0.5, se = FALSE, method = "loess") +
+  scale_fill_brewer(palette = "Set1") +
+  labs(fill = "Prevention\nIndex", size = "BMSM\nIR",
+       y = "Disparity Index", x = "Relative BMSM Continuum") +
+  geom_vline(xintercept = 1, lwd = 0.5, lty = 3) +
+  geom_hline(yintercept = 6.08, lwd = 0.5, lty = 2) +
   theme_minimal()
 
 pdf(file = "analysis/Fig1.pdf", height = 7, width = 10)
-df$prev.ind.1 <- ifelse(df$prev.ind >= 1, ">= 1", "< 1")
+df$prev.ind.1 <- ifelse(df$prev.ind >= 0, ">= 1", "< 1")
 ggplot(df, aes(param, disp.ind)) +
   geom_jitter(aes(fill = prev.ind.1), shape = 21, color = "white",
               size = 2.5, alpha = 0.3, width = 0.05) +
   scale_fill_brewer(palette = "Set1") +
   labs(fill = "Prevention\nIndex", y = "Disparity Index", x = "Relative BMSM Continuum") +
-  ylim(1, 12) +
+  ylim(0, 12) +
   geom_vline(xintercept = 1, lwd = 0.5, lty = 2) +
   theme_minimal()
 dev.off()
+
 
 
 
