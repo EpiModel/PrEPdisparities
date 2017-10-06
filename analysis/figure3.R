@@ -1,13 +1,14 @@
 
 ## PrEP Race Figure 2
-
 rm(list = ls())
 library("EpiModelHIV")
-library("EpiModelHPC")
 library("dplyr")
+
+library("ggplot2")
+library("viridis")
+library("gridExtra")
+
 source("analysis/fx.R")
-library(ggplot2)
-library(viridis)
 
 
 # Process Data --------------------------------------------------------
@@ -70,6 +71,51 @@ df$p2 <- rep(seq(0.5, 2, 0.1), times = 16)
 
 table(df$p1, df$p2)
 
+## PIA
+prev.loess <- loess(pia.B ~ p1 * p2, data = df)
+prev.fit2 <- expand.grid(list(p1 = seq(0.5, 2, 0.01),
+                              p2 = seq(0.5, 2, 0.01)))
+prev.fit2$PIA <- as.numeric(predict(prev.loess, newdata = prev.fit2))
+
+p1 <- ggplot(prev.fit2, aes(p1, p2)) +
+  geom_raster(aes(fill = PIA), interpolate = TRUE) +
+  geom_contour(aes(z = PIA), col = "white", alpha = 0.5, lwd = 0.5) +
+  theme_minimal() +
+  scale_y_continuous(expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0)) +
+  labs(title = "Percent of Infections Averted",
+       y = "Relative PrEP Engagement Continuum", x = "Relative PrEP Initiation Continuum") +
+  # scale_fill_viridis(discrete = FALSE, alpha = 1, option = "D", direction = 1) +
+  scale_fill_distiller(type = "div", palette = "RdYlGn", direction = -1) +
+  theme(legend.position = "right")
+
+## NNT
+
+prev.loess <- loess(nnt.B ~ p1 * p2, data = df)
+prev.fit3 <- expand.grid(list(p1 = seq(0.5, 2, 0.01),
+                              p2 = seq(0.5, 2, 0.01)))
+prev.fit3$NNT <- as.numeric(predict(prev.loess, newdata = prev.fit3))
+
+p2 <- ggplot(prev.fit3, aes(p1, p2)) +
+  geom_raster(aes(fill = NNT), interpolate = TRUE) +
+  geom_contour(aes(z = NNT), col = "white", alpha = 0.5, lwd = 0.5) +
+  theme_minimal() +
+  scale_y_continuous(expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0)) +
+  labs(title = "Number Needed to Treat",
+       y = "Relative PrEP Engagement Continuum", x = "Relative PrEP Initiation Continuum") +
+  scale_fill_distiller(type = "div", palette = "RdYlGn") +
+  theme(legend.position = "right")
+
+
+pdf(file = "analysis/Fig3.pdf", h = 8, w = 16)
+grid.arrange(p1, p2, ncol = 2)
+dev.off()
+
+
+
+# alternates --------------------------------------------------------------
+
 ## Incidence
 prev.loess <- loess(inc.B ~ p1 * p2, data = df)
 prev.fit <- expand.grid(list(p1 = seq(0.5, 2, 0.01),
@@ -105,7 +151,7 @@ ggplot(prev.fit, aes(p1, p2)) +
 ## Disparity Index
 prev.loess <- loess(disp.ind ~ p1 * p2, data = df)
 prev.fit1 <- expand.grid(list(p1 = seq(0.5, 2, 0.01),
-                             p2 = seq(0.5, 2, 0.01)))
+                              p2 = seq(0.5, 2, 0.01)))
 prev.fit1$DI <- as.numeric(predict(prev.loess, newdata = prev.fit))
 
 p1 <- ggplot(prev.fit1, aes(p1, p2)) +
@@ -115,46 +161,7 @@ p1 <- ggplot(prev.fit1, aes(p1, p2)) +
   scale_y_continuous(expand = c(0, 0)) +
   scale_x_continuous(expand = c(0, 0)) +
   labs(title = "A. Disparity Index by BMSM Continuum",
-         y = "Relative PrEP Engagement Continuum", x = "Relative PrEP Initiation Continuum") +
+       y = "Relative PrEP Engagement Continuum", x = "Relative PrEP Initiation Continuum") +
   scale_fill_viridis(discrete = FALSE, alpha = 1, option = "D", direction = -1)
-  # scale_fill_gradientn(colours = rev(wes_palette(name = 5, n = 250, type = "continuous")))
+# scale_fill_gradientn(colours = rev(wes_palette(name = 5, n = 250, type = "continuous")))
 
-## PIA
-prev.loess <- loess(pia.B ~ p1 * p2, data = df)
-prev.fit2 <- expand.grid(list(p1 = seq(0.5, 2, 0.01),
-                             p2 = seq(0.5, 2, 0.01)))
-prev.fit2$PIA <- as.numeric(predict(prev.loess, newdata = prev.fit2))
-
-p1 <- ggplot(prev.fit2, aes(p1, p2)) +
-  geom_raster(aes(fill = PIA), interpolate = TRUE) +
-  geom_contour(aes(z = PIA), col = "white", alpha = 0.25, lwd = 0.4) +
-  theme_minimal() +
-  scale_y_continuous(expand = c(0, 0)) +
-  scale_x_continuous(expand = c(0, 0)) +
-  labs(title = "A. Percent of Infections Averted by BMSM Continuum",
-       y = "Relative PrEP Engagement Continuum", x = "Relative PrEP Initiation Continuum") +
-  scale_fill_viridis(discrete = FALSE, alpha = 1, option = "D", direction = 1) +
-  theme(legend.position = "right")
-
-## NNT
-
-prev.loess <- loess(nnt.B ~ p1 * p2, data = df)
-prev.fit3 <- expand.grid(list(p1 = seq(0.5, 2, 0.01),
-                              p2 = seq(0.5, 2, 0.01)))
-prev.fit3$NNT <- as.numeric(predict(prev.loess, newdata = prev.fit3))
-
-p2 <- ggplot(prev.fit3, aes(p1, p2)) +
-  geom_raster(aes(fill = NNT), interpolate = TRUE) +
-  geom_contour(aes(z = NNT), col = "white", alpha = 0.25, lwd = 0.4) +
-  theme_minimal() +
-  scale_y_continuous(expand = c(0, 0)) +
-  scale_x_continuous(expand = c(0, 0)) +
-  labs(title = "B. Number Needed to Treat by BMSM Continuum",
-       y = "Relative PrEP Engagement Continuum", x = "Relative PrEP Initiation Continuum") +
-  scale_fill_viridis(discrete = FALSE, alpha = 1, option = "D", direction = 1) +
-  theme(legend.position = "right")
-
-library(gridExtra)
-pdf(file = "analysis/Fig3.pdf", h = 8, w = 16)
-grid.arrange(p1, p2, ncol = 2)
-dev.off()

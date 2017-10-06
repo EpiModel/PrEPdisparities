@@ -21,25 +21,19 @@ for (i in seq_along(sims)) {
   fn <- list.files("data/f1", pattern = as.character(sims[i]), full.names = TRUE)
   load(fn)
 
+  i.prev.W <- as.numeric(sim$epi$i.prev.W[520, ])
+  i.prev.B <- as.numeric(sim$epi$i.prev.B[520, ])
+
   haz.W <- as.numeric(colMeans(tail(sim$epi$ir100.W, 52)))
   haz.B <- as.numeric(colMeans(tail(sim$epi$ir100.B, 52)))
-  disp.ind <- haz.B - haz.W
-
-  num.W <- unname(colMeans(tail(sim$epi$ir100.W, 52)))
-  denom.W <- unname(colMeans(tail(sim.base$epi$ir100.W, 52)))
-  vec.hr.W <- num.W/denom.W
-
-  num.B <- unname(colMeans(tail(sim$epi$ir100.B, 52)))
-  denom.B <- unname(colMeans(tail(sim.base$epi$ir100.B, 52)))
-  vec.hr.B <- num.B/denom.B
-
-  prev.ind <- vec.hr.B - vec.hr.W
 
   new.df <- data.frame(scenario = sims[i],
                        simno = 1:sim$control$nsims,
                        param = vals[i],
-                       inc.B = haz.B, inc.W = haz.W,
-                       disp.ind = disp.ind, prev.ind = prev.ind)
+                       prev.B = i.prev.B,
+                       prev.W = i.prev.W,
+                       inc.B = haz.B,
+                       inc.W = haz.W)
 
   if (i == 1) {
     df <- new.df
@@ -52,93 +46,82 @@ for (i in seq_along(sims)) {
 
 table(df$scenario)
 table(df$param)
-hist(df$prev.ind)
+hist(df$prev.B)
+hist(df$prev.W)
 
-dfb <- group_by(df, param)
-dfo <- as.data.frame(summarise(dfb,
-                               disp = mean(disp.ind),
-                               disp.lcl = quantile(disp.ind, 0.025),
-                               disp.ucl = quantile(disp.ind, 0.975),
-                               prev = mean(prev.ind),
-                               prev.lcl = quantile(prev.ind, 0.025),
-                               prev.ucl = quantile(prev.ind, 0.975)))
 
-dfo$disp <- lowess(dfo$disp)$y
-dfo$disp.lcl <- lowess(dfo$disp.lcl)$y
-dfo$disp.ucl <- lowess(dfo$disp.ucl)$y
+df <- mutate(df, param = factor(param, unique(param)))
 
-dfo$prev <- lowess(dfo$prev)$y
-dfo$prev.lcl <- lowess(dfo$prev.lcl)$y
-dfo$prev.ucl <- lowess(dfo$prev.ucl)$y
+dfb <- df
+dfw <- df
+dfb$race <- "B"
+dfw$race <- "W"
+dfb$prev <- dfb$prev.B
+dfw$prev <- dfb$prev.W
+dfb$inc <- dfb$inc.B
+dfw$inc <- dfw$inc.W
+dfb <- dfb[, c(3, 8:10)]
+dfw <- dfw[, c(3, 8:10)]
 
-library(viridis)
-pal1 <- viridis(5)
-pal2 <- adjustcolor(pal1, alpha.f = 0.25)
+ndf <- rbind(dfb, dfw)
 
 library(ggplot2)
-df$prev.ind.1 <- ifelse(df$prev.ind >= 0, ">= 0", "< 0")
+library(ggjoy)
 
-ggplot(df, aes(param, disp.ind)) +
-  geom_jitter(aes(fill = prev.ind), shape = 21, color = "black",
-              size = 2.5, alpha = 0.25, width = 0.05) +
-  stat_smooth(col = "black", lwd = 0.5, se = FALSE, method = "loess") +
-  scale_fill_viridis(discrete = FALSE, option = "D", direction = -1) +
-  labs(fill = "Prevention\nIndex", size = "BMSM\nIR",
-       y = "Disparity Index", x = "Relative BMSM Continuum") +
-  # ylim(0, 12) +
-  geom_vline(xintercept = 1, lwd = 0.5, lty = 2) +
-  geom_hline(yintercept = 6.08, lwd = 0.5, lty = 2) +
-  theme_minimal()
+pal <- viridis::viridis(5)
+pal <- RColorBrewer::brewer.pal(11, "PRGn")
 
-ggplot(df, aes(param, disp.ind)) +
-  geom_jitter(aes(fill = prev.ind.1), shape = 21, color = "white",
-              size = 2.5, alpha = 0.25, width = 0.05) +
-  stat_smooth(col = "black", lwd = 0.5, se = FALSE, method = "loess") +
-  scale_fill_brewer(palette = "Set1") +
-  labs(fill = "Prevention\nIndex", size = "BMSM\nIR",
-       y = "Disparity Index", x = "Relative BMSM Continuum") +
-  geom_vline(xintercept = 1, lwd = 0.5, lty = 3) +
-  geom_hline(yintercept = 6.08, lwd = 0.5, lty = 2) +
-  theme_minimal()
+p1 <- ggplot(ndf, aes(y = param)) +
+  geom_joy(aes(x = prev, fill = paste(param, race)),
+           alpha = 0.95, scale = 4, rel_min_height = 0.001, col = "white", lwd = 0.5) +
+  theme_joy(grid = TRUE) +
+  labs(x = "HIV Prevalence",
+       y = "BMSM Relative Continuum",
+       main = "A. Race-Stratified HIV Incidence by BMSM Continuum") +
+  scale_y_discrete(expand = c(0.01, 0), breaks = seq(0.5, 2.0, 0.1)) +
+  scale_x_continuous(expand = c(0.01, 0)) +
+  scale_fill_cyclical(breaks = c("2 B", "2 W"),
+                      labels = c(`2 B` = "B", `2 W` = "W"),
+                      values = c(pal[2], pal[9], pal[3], pal[10]),
+                      name = "Race", guide = "legend")
 
-pdf(file = "analysis/Fig1.pdf", height = 7, width = 10)
-df$prev.ind.1 <- ifelse(df$prev.ind >= 0, ">= 1", "< 1")
-ggplot(df, aes(param, disp.ind)) +
-  geom_jitter(aes(fill = prev.ind.1), shape = 21, color = "white",
-              size = 2.5, alpha = 0.3, width = 0.05) +
-  scale_fill_brewer(palette = "Set1") +
-  labs(fill = "Prevention\nIndex", y = "Disparity Index", x = "Relative BMSM Continuum") +
-  ylim(0, 12) +
-  geom_vline(xintercept = 1, lwd = 0.5, lty = 2) +
-  theme_minimal()
+p2 <- ggplot(ndf, aes(y = param)) +
+  geom_joy(aes(x = inc, fill = paste(param, race)),
+           alpha = 0.9, scale = 4, rel_min_height = 0.02, col = "white", lwd = 0.5) +
+  theme_joy(grid = TRUE) +
+  labs(x = "HIV Incidence per 100 PYAR",
+       y = "BMSM Relative Continuum",
+       main = "B. Race-Stratified HIV Incidence by BMSM Continuum") +
+  scale_y_discrete(expand = c(0.01, 0), breaks = seq(0.5, 2.0, 0.1)) +
+  scale_x_continuous(expand = c(0.01, 0)) +
+  scale_fill_cyclical(breaks = c("2 B", "2 W"),
+                      labels = c(`2 B` = "B", `2 W` = "W"),
+                      values = c(pal[2], pal[9], pal[3], pal[10]),
+                      name = "Race", guide = "legend")
+
+library(gridExtra)
+pdf(file = "analysis/Fig1.pdf", h = 8, w = 16)
+grid.arrange(p1, p2, ncol = 2)
 dev.off()
 
 
+# alternates --------------------------------------------------------------
 
+ggplot(df, aes(x = prev.B, y = param, fill = param)) +
+  geom_joy(scale = 2, rel_min_height = 0.01, alpha = 0.6, col = "black") +
+  scale_fill_cyclical(values = c("gray", "lightblue")) +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  xlab("HIV Prevalence") +
+  theme_joy(grid = TRUE) +
+  theme(axis.title.y = element_blank(),
+        legend.position = "none")
 
-# alternate ---------------------------------------------------------------
-
-# pdf(file = "analysis/Fig1.pdf", height = 8, width = 16)
-par(mar = c(3,3,2,1), mgp = c(2,1,0), mfrow = c(1,2))
-plot(dfo$param, dfo$disp, type = "n", ylim = c(0, 12),
-     ylab = "Disparity Index", xlab = "Relative BMSM Continuum Values",
-     main = "A. Disparity Index by BMSM Continuum")
-lines(dfo$param, dfo$disp, lwd = 2, col = pal1[1])
-polygon(c(dfo$param, rev(dfo$param)), c(dfo$disp.lcl, rev(dfo$disp.ucl)),
-        col = pal2[1], border = "grey70")
-abline(h = 1, lty = 2)
-points(1, dfo[which(dfo$param == 1),]$disp, col = pal1[4], bg = pal1[5], cex = 1.5, pch = 21)
-legend("topright", legend = c("Predictions", "Observed Continuum"), lty = c(1, NA), pch = c(NA, 21),
-       col = c(pal1[1], pal1[4]), pt.bg = c(NA, pal1[5]), lwd = c(2, NA), cex = 0.9, bty = "n")
-
-plot(dfo$param, dfo$prev, type = "n", ylim = c(0, 3),
-     ylab = "Prevention Index", xlab = "Relative BMSM Continuum Values",
-     main = "B. Prevention Index by BMSM Continuum")
-lines(dfo$param, dfo$prev, lwd = 2, col = pal1[2])
-polygon(c(dfo$param, rev(dfo$param)), c(dfo$prev.lcl, rev(dfo$prev.ucl)),
-        col = pal2[2], border = "grey70")
-abline(h = 1, lty = 2)
-points(1, dfo[which(dfo$param == 1),]$prev, col = pal1[4], bg = pal1[5], cex = 1.5, pch = 21)
-legend("topright", legend = c("Predictions", "Observed Continuum"), lty = c(1, NA), pch = c(NA, 21),
-       col = c(pal1[2], pal1[4]), pt.bg = c(NA, pal1[5]), lwd = c(2, NA), cex = 0.9, bty = "n")
-# dev.off()
+ggplot(df, aes(x = prev.W, y = param, fill = param)) +
+  geom_joy(scale = 2, rel_min_height = 0.01, alpha = 0.6, col = "white") +
+  scale_fill_viridis(discrete = TRUE, alpha = 0.5) +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  scale_y_discrete(expand = c(0.01, 0), breaks = seq(0.5, 2, 0.1)) +
+  xlab("HIV Prevalence") +
+  theme_joy() +
+  theme(axis.title.y = element_blank(),
+        legend.position = "none")
