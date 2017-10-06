@@ -26,6 +26,8 @@ plot(dx.c, qnts.alpha = 0.8)
 
 # One-off model diagnostics
 
+mcmc.diagnostics(est[[3]]$fit)
+
 dx.i <- netdx(est[[3]], nsims = 10000, dynamic = FALSE)
 
 print(dx.i)
