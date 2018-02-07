@@ -66,12 +66,13 @@ dfw <- dfw[, c(3, 8:10)]
 ndf <- rbind(dfb, dfw)
 
 library(ggplot2)
-library(ggjoy)
+library(ggridges)
 
 pal <- viridis::viridis(5)
 pal <- RColorBrewer::brewer.pal(11, "PRGn")
 
 p1 <- ggplot(ndf, aes(y = param)) +
+  geom_vline(xintercept = 0.452, lty = 2) +
   geom_joy(aes(x = prev, fill = paste(param, race)),
            alpha = 0.95, scale = 4, rel_min_height = 0.001, col = "white", lwd = 0.5) +
   theme_joy(grid = TRUE) +
@@ -86,6 +87,7 @@ p1 <- ggplot(ndf, aes(y = param)) +
                       name = "Race", guide = "legend")
 
 p2 <- ggplot(ndf, aes(y = param)) +
+  geom_vline(xintercept = 7.73, lty = 2) +
   geom_joy(aes(x = inc, fill = paste(param, race)),
            alpha = 0.9, scale = 4, rel_min_height = 0.02, col = "white", lwd = 0.5) +
   theme_joy(grid = TRUE) +

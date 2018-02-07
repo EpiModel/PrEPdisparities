@@ -34,10 +34,15 @@ epi_stats <- function(sim.base,
   incid.base.W <- unname(colSums(sim.base$epi$incid.W))
   incid.base.B <- unname(colSums(sim.base$epi$incid.B))
 
-  disp.ind <- haz.B/haz.W
-  disp.ind.base <- round(data.frame(median = median(disp.ind),
-                                    ql = quantile(disp.ind, qnt.low, names = FALSE),
-                                    qu = quantile(disp.ind, qnt.high, names = FALSE)), 2)
+  disp.ind.rel <- haz.B/haz.W
+  disp.ind.rel.base <- round(data.frame(median = median(disp.ind.rel),
+                                    ql = quantile(disp.ind.rel, qnt.low, names = FALSE),
+                                    qu = quantile(disp.ind.rel, qnt.high, names = FALSE)), 2)
+
+  disp.ind.abs <- haz.B - haz.W
+  disp.ind.abs.base <- round(data.frame(median = median(disp.ind.abs),
+                                        ql = quantile(disp.ind.abs, qnt.low, names = FALSE),
+                                        qu = quantile(disp.ind.abs, qnt.high, names = FALSE)), 2)
 
   # Comparison scenario -------------------------------------------------
 
@@ -79,10 +84,15 @@ epi_stats <- function(sim.base,
                                   ql = quantile(haz.B, qnt.low, names = FALSE, na.rm = TRUE),
                                   qu = quantile(haz.B, qnt.high, names = FALSE, na.rm = TRUE)), 2)
 
-    disp.ind <- haz.B/haz.W
-    out.disp.ind <- round(data.frame(median = median(disp.ind),
-                                     ql = quantile(disp.ind, qnt.low, names = FALSE),
-                                     qu = quantile(disp.ind, qnt.high, names = FALSE)), 2)
+    disp.ind.rel <- haz.B/haz.W
+    out.disp.ind.rel <- round(data.frame(median = median(disp.ind.rel),
+                                     ql = quantile(disp.ind.rel, qnt.low, names = FALSE),
+                                     qu = quantile(disp.ind.rel, qnt.high, names = FALSE)), 2)
+
+    disp.ind.abs <- haz.B - haz.W
+    out.disp.ind.abs <- round(data.frame(median = median(disp.ind.abs),
+                                         ql = quantile(disp.ind.abs, qnt.low, names = FALSE),
+                                         qu = quantile(disp.ind.abs, qnt.high, names = FALSE)), 2)
 
     # HR
     num.W <- unname(colMeans(tail(sim.comp$epi$ir100.W, 52)))
@@ -155,8 +165,14 @@ epi_stats <- function(sim.base,
     cat("\nHIV Incidence B:")
     print(t(out.haz.B))
 
-    cat("\nDisparity Index:")
-    print(t(out.disp.ind))
+    cat("\nDisparity Index Abs:")
+    print(t(out.disp.ind.abs))
+
+    cat("\nDisparity Index Abs:")
+    print(t(out.disp.ind.abs))
+
+    cat("\nDisparity Index Rel:")
+    print(t(out.disp.ind.rel))
 
     cat("\nHIV Hazard Ratio W:")
     print(t(out.hr.W))
@@ -193,8 +209,11 @@ epi_stats <- function(sim.base,
     cat("\nHIV Incidence B:")
     print(t(haz.base.B))
 
-    cat("\nDisparity Index:")
-    print(t(disp.ind.base))
+    cat("\nDisparity Index Abs:")
+    print(t(disp.ind.abs.base))
+
+    cat("\nDisparity Index Rel:")
+    print(t(disp.ind.rel.base))
 
   }
 
