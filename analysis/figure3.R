@@ -1,5 +1,5 @@
 
-## PrEP Race Figure 2
+## PrEP Race Figure 3
 rm(list = ls())
 library("EpiModelHIV")
 library("dplyr")
@@ -80,14 +80,19 @@ prev.fit2$PIA <- as.numeric(predict(prev.loess, newdata = prev.fit2))
 p1 <- ggplot(prev.fit2, aes(p1, p2)) +
   geom_raster(aes(fill = PIA), interpolate = TRUE) +
   geom_contour(aes(z = PIA), col = "white", alpha = 0.5, lwd = 0.5) +
-  theme_minimal() +
+  theme_classic() +
   scale_y_continuous(expand = c(0, 0)) +
   scale_x_continuous(expand = c(0, 0)) +
-  labs(title = "Percent of Infections Averted",
-       y = "Relative PrEP Engagement Continuum", x = "Relative PrEP Initiation Continuum") +
+  labs(y = "Relative PrEP Engagement Continuum", x = "Relative PrEP Initiation Continuum") +
   # scale_fill_viridis(discrete = FALSE, alpha = 1, option = "D", direction = 1) +
-  scale_fill_distiller(type = "div", palette = "RdYlGn", direction = -1) +
-  theme(legend.position = "right")
+  scale_fill_distiller(type = "div", palette = "RdYlGn", direction = 1,
+                       breaks = c(0.03,0.2,0.4,0.6), labels = c("0.0",0.2,0.4, 0.6)) +
+  theme(legend.position = "right",axis.text = element_text(size = 12, colour = "black"),
+        axis.title = element_text(size = 12),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        axis.ticks.length = unit(0.25, "cm"),
+        axis.ticks = element_line(color = "black"))
 
 ## NNT
 
@@ -99,69 +104,29 @@ prev.fit3$NNT <- as.numeric(predict(prev.loess, newdata = prev.fit3))
 p2 <- ggplot(prev.fit3, aes(p1, p2)) +
   geom_raster(aes(fill = NNT), interpolate = TRUE) +
   geom_contour(aes(z = NNT), col = "white", alpha = 0.5, lwd = 0.5) +
-  theme_minimal() +
+  theme_classic() +
   scale_y_continuous(expand = c(0, 0)) +
   scale_x_continuous(expand = c(0, 0)) +
-  labs(title = "Number Needed to Treat",
-       y = "Relative PrEP Engagement Continuum", x = "Relative PrEP Initiation Continuum") +
+  labs(y = "Relative PrEP Engagement Continuum", x = "Relative PrEP Initiation Continuum") +
   scale_fill_distiller(type = "div", palette = "RdYlGn") +
-  theme(legend.position = "right")
+  theme(legend.position = "right",
+        axis.text = element_text(size = 12, colour = "black"),
+        axis.title = element_text(size = 12),
+        legend.text = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        axis.ticks.length = unit(0.25, "cm"),
+        axis.ticks = element_line(color = "black"))
 
+grid.arrange(p1, p2, ncol = 2)
 
-pdf(file = "analysis/Fig3.pdf", h = 8, w = 16)
+pdf(file = "analysis/Figure3.pdf", height = 5.5, width = 11)
 grid.arrange(p1, p2, ncol = 2)
 dev.off()
 
+pdf(file = "analysis/Figure3A.pdf", height = 5.5, width = 5.5)
+p1
+dev.off()
 
-
-# alternates --------------------------------------------------------------
-
-## Incidence
-prev.loess <- loess(inc.B ~ p1 * p2, data = df)
-prev.fit <- expand.grid(list(p1 = seq(0.5, 2, 0.01),
-                             p2 = seq(0.5, 2, 0.01)))
-prev.fit$Incid <- as.numeric(predict(prev.loess, newdata = prev.fit))
-
-ggplot(prev.fit, aes(p1, p2)) +
-  geom_raster(aes(fill = Incid), interpolate = TRUE) +
-  geom_contour(aes(z = Incid), col = "white", alpha = 0.25, lwd = 0.4, binwidth = 0.3) +
-  theme_minimal() +
-  scale_y_continuous(expand = c(0, 0)) +
-  scale_x_continuous(expand = c(0, 0)) +
-  labs(y = "Relative PrEP Engagement Continuum", x = "Relative PrEP Initiation Continuum") +
-  scale_fill_viridis(discrete = FALSE, alpha = 1, option = "B", direction = -1)
-
-
-## Prevalence
-prev.loess <- loess(prev.B ~ p1 * p2, data = df)
-prev.fit <- expand.grid(list(p1 = seq(0.5, 2, 0.01),
-                             p2 = seq(0.5, 2, 0.01)))
-prev.fit$Prev <- as.numeric(predict(prev.loess, newdata = prev.fit))
-
-ggplot(prev.fit, aes(p1, p2)) +
-  geom_raster(aes(fill = Prev), interpolate = TRUE) +
-  geom_contour(aes(z = DI), col = "white", alpha = 0.25, lwd = 0.4, binwidth = 0.3) +
-  theme_minimal() +
-  scale_y_continuous(expand = c(0, 0)) +
-  scale_x_continuous(expand = c(0, 0)) +
-  labs(y = "Relative PrEP Engagement Continuum", x = "Relative PrEP Initiation Continuum") +
-  scale_fill_viridis(discrete = FALSE, alpha = 1, option = "B", direction = -1)
-
-
-## Disparity Index
-prev.loess <- loess(disp.ind ~ p1 * p2, data = df)
-prev.fit1 <- expand.grid(list(p1 = seq(0.5, 2, 0.01),
-                              p2 = seq(0.5, 2, 0.01)))
-prev.fit1$DI <- as.numeric(predict(prev.loess, newdata = prev.fit))
-
-p1 <- ggplot(prev.fit1, aes(p1, p2)) +
-  geom_raster(aes(fill = DI), interpolate = TRUE) +
-  geom_contour(aes(z = DI), col = "white", alpha = 0.25, lwd = 0.4) +
-  theme_minimal() +
-  scale_y_continuous(expand = c(0, 0)) +
-  scale_x_continuous(expand = c(0, 0)) +
-  labs(title = "A. Disparity Index by BMSM Continuum",
-       y = "Relative PrEP Engagement Continuum", x = "Relative PrEP Initiation Continuum") +
-  scale_fill_viridis(discrete = FALSE, alpha = 1, option = "D", direction = -1)
-# scale_fill_gradientn(colours = rev(wes_palette(name = 5, n = 250, type = "continuous")))
-
+pdf(file = "analysis/Figure3B.pdf", height = 5.5, width = 5.5)
+p2
+dev.off()
