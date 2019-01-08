@@ -74,6 +74,7 @@ p1 <- ggplot(df, aes(param, disp.ind.abs)) +
   geom_vline(xintercept = 1, lwd = 0.5, lty = 3) +
   geom_hline(yintercept = 6.08, lwd = 0.5, lty = 2) +
   theme_classic() +
+  ylim(0, 10) +
   theme(legend.position = c(0.85, 0.9),
         legend.background = element_rect(color = "black",
                                          size = 0.5,

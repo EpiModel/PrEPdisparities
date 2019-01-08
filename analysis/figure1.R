@@ -86,7 +86,7 @@ p1 <- ggplot(ndf, aes(y = param)) +
        y = "BMSM Relative Continuum",
        main = "A. Race-Stratified HIV Incidence by BMSM Continuum") +
   scale_y_discrete(expand = c(0.01, 0), breaks = seq(0.5, 2.0, 0.1), labels = scaleFUN(breaks)) +
-  scale_x_continuous(expand = c(0.01, 0)) +
+  scale_x_continuous(breaks = seq(0, 0.5, 0.1)) +
   scale_fill_cyclical(breaks = c("2 B", "2 W"),
                       labels = c(`2 B` = "B", `2 W` = "W"),
                       values = c(pal[2], pal[9], pal[3], pal[10]),
@@ -107,7 +107,7 @@ p2 <- ggplot(ndf, aes(y = param)) +
        y = "BMSM Relative Continuum",
        main = "B. Race-Stratified HIV Incidence by BMSM Continuum") +
   scale_y_discrete(expand = c(0.01, 0), breaks = seq(0.5, 2.0, 0.1), labels = scaleFUN(breaks)) +
-  scale_x_continuous(expand = c(0.01, 0)) +
+  scale_x_continuous(breaks = seq(0, 10, 2.5)) +
   scale_fill_cyclical(breaks = c("2 B", "2 W"),
                       labels = c(`2 B` = "Black", `2 W` = "White"),
                       values = c(pal[2], pal[9], pal[3], pal[10]),
