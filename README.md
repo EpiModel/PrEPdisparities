@@ -2,9 +2,15 @@
 
 This repository holds the source to code to reproduce the analysis featured in our HIV transmission model among men who have sex with men in the United States. This study investigated how race-based gaps along a PrEP care "continuum" -- from awareness to access to prescription to adherence to retention -- could impact HIV incidence overall among MSM and the disparities in HIV incidence between black and white MSM.
 
-## Citation
+## Paper and engine
 
-> Jenness SM, Maloney K, Smith SK, Hoover KW, Rosenberg ES, Goodreau SM, Weiss KM, Liu AY, Rao D, Sullivan PS. Addressing Gaps in HIV Preexposure Prophylaxis Care to Reduce Racial Disparities in HIV Incidence in the United States. _American Journal of Epidemiology._ 2019; 188(4): 743-752. 
+> Jenness SM, Maloney KM, Smith DK, Hoover KW, Goodreau SM, Rosenberg ES, Weiss KM, Liu AY, Rao DW, Sullivan PS. Addressing Gaps in HIV Preexposure Prophylaxis Care to Reduce Racial Disparities in HIV Incidence in the United States. _Am J Epidemiol._ 2019; 188(4): 743-752. [doi:10.1093/aje/kwy230](https://doi.org/10.1093/aje/kwy230)
+
+The EpiModelHIV engine for this paper is release [`p4`](https://github.com/EpiModel/EpiModelHIV/releases/tag/p4) of EpiModel/EpiModelHIV. Install it with:
+
+```r
+remotes::install_github("EpiModel/EpiModelHIV@p4")
+```
 
 <img src="https://github.com/EpiModel/PrEPdisparities/raw/master/analysis/Fig1.png">
 
